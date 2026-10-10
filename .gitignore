@@ -1,0 +1,5 @@
+.directory
+.vscode
+build/int/*
+build/*.*
+build/examples/*
