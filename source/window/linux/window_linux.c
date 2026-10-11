@@ -1,4 +1,4 @@
-#include "linux/window_linux_internal.c"
+#include <window/linux/window_linux_internal.c>
 
 internal void cwindow_manager_initialize(err_t* err) {
     
@@ -58,9 +58,9 @@ cwindow_t cwindow_create(err_t* err, const char* title, cvec2u_t size) {
     }
 
     cwindow_t result = free_windows[CORE_CWINDOW_MAX - ++window_count];
-    struct internal_window_t* window = &windows[result];
+    cwindow_linux_t* window = &windows[result];
 
-    *window = (struct internal_window_t) {
+    *window = (cwindow_linux_t) {
         .title = title,
         .size = {size[X], size[Y]},
         .sizef = {(float)size[X], (float)size[Y]}
@@ -90,7 +90,7 @@ void cwindow_destroy(err_t* err, cwindow_t handle) {
 
     free_windows[CORE_CWINDOW_MAX - window_count] = handle;
     
-    windows[handle] = (struct internal_window_t) {
+    windows[handle] = (cwindow_linux_t) {
         .title = NULL,
         .size = {0,0},
         .sizef = {0.0f,0.0f},
@@ -139,7 +139,7 @@ void cwindow_get_sizef(err_t* err, cwindow_t handle, cvec2f_t* out) {
 
 }
 
-char* cwindow_get_title(err_t* err, cwindow_t handle) {
+const char* cwindow_get_title(err_t* err, cwindow_t handle) {
 
     if (windows[handle].state & CORE_CWINDOW_READY == 0) {
         throw(err, CORE_WINNREADY);
@@ -180,17 +180,6 @@ bool cwindow_get_resized(err_t* err, cwindow_t handle) {
     }
 
     return windows[handle].state & CORE_CWINDOW_RESIZED == 1;
-
-}
-
-void* cwindow_get_surface(err_t* err, cwindow_t handle) {
-
-    if (windows[handle].state & CORE_CWINDOW_READY == 0) {
-        throw(err, CORE_WINNREADY);
-        return NULL;
-    }
-
-    return (void*)windows[handle].surface;
 
 }
 
@@ -278,3 +267,19 @@ void cwindow_close(err_t* err, cwindow_t handle) {
     windows[handle].state |= CORE_CWINDOW_CLOSED;
 
 }
+
+cwindow_linux_t* cwindow_get_data(err_t* err, cwindow_t handle) {
+
+    if (windows[handle].state & CORE_CWINDOW_READY == 0) {
+        throw(err, CORE_WINNREADY);
+        return NULL;
+    }
+
+    return &windows[handle];
+
+}
+
+struct wl_display* cwm_get_display(void)        { return display;       }
+struct wl_registry* cwm_get_registry(void)      { return registry;      }
+struct wl_compositor* cwm_get_compositor(void)  { return compositor;    }
+struct xdg_wm_base* cwm_get_xdg_wm_base(void)   { return xdg_wm_base;   }

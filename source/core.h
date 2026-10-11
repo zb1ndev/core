@@ -7,6 +7,7 @@ extern "C" {
 #include <platform/platform.h>
 #include <window/window.h>
 #include <debug/debug.h>
+#include <gapi/gapi.h>
 #include <math/math.h>
 
 int32_t                 main                        (int32_t argc, const char** argv);

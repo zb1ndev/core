@@ -5,7 +5,7 @@ source_files=(
     "./source/core.c"
     "./source/math/math.c"
     "./source/debug/debug.c"
-    "./source/gapi/linux/egl_linux.c"
+    "./source/gapi/linux/gl_linux.c"
     "./source/window/linux/window_linux.c"
     "./deps/wayland/xdg-shell-protocol.c"
 )
