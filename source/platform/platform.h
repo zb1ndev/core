@@ -11,6 +11,7 @@ extern "C" {
 #include <stdint.h>
 #include <string.h>
 #include <stdbool.h>
+#include <stdarg.h>
 
 typedef uint8_t cplatform_t;
 
