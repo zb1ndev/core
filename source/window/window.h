@@ -9,6 +9,7 @@ extern "C" {
 #include <math/math.h>
 
 #define CORE_CWINDOW_MAX                            UINT8_MAX
+#define CORE_CWINDOW_INVALID                        UINT8_MAX
 typedef uint8_t cwindow_t;
 
 cwindow_t               cwindow_create              (err_t* err, const char* title, cvec2u_t size);
