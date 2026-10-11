@@ -5,11 +5,13 @@ source_files=(
     "./source/core.c"
     "./source/math/math.c"
     "./source/debug/debug.c"
-    "./source/window/window_linux.c"
+    "./source/gapi/linux/egl_linux.c"
+    "./source/window/linux/window_linux.c"
+    "./deps/wayland/xdg-shell-protocol.c"
 )
 
 includes="-I./deps/ -I./source/"
-linkages="-lwayland-client -lwayland-cursor -lwayland-egl -lEGL -lGLESv2"
+linkages="-lwayland-client -lwayland-cursor -lwayland-egl -lEGL -lGLESv2 -lrt"
 
 for file in "${source_files[@]}"; do
     filename="${file##*/}"

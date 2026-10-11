@@ -1,5 +1,5 @@
-#if !defined(MATH_H)
-#define MATH_H
+#if !defined(CORE_MATH_H)
+#define CORE_MATH_H
 #if defined(__cplusplus)
 extern "C" {
 #endif // __cplusplus
@@ -26,4 +26,4 @@ typedef uint32_t cvec4u_t[4];
 #if defined(__cplusplus)
 }
 #endif // __cplusplus
-#endif // MATH_H
+#endif // CORE_MATH_H
