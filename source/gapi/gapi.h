@@ -17,12 +17,13 @@ extern "C" {
 */
 
 cwindow_t               cgapi_opengl_hook           (err_t* err, cwindow_t handle);
-// void                    cgapi_vulkan_hook           (err_t* err, cwindow_t handle);
-
 void                    cgapi_opengl_cleanup        (err_t* err, cwindow_t handle);
-// void                    cgapi_vulkan_cleanup        (err_t* err);
 
-void                    cgapi_opengl_test           (cwindow_t handle);
+cwindow_t               cgapi_vulkan_hook           (err_t* err, cwindow_t handle);
+void                    cgapi_vulkan_cleanup        (err_t* err, cwindow_t handle);
+
+void                    cgapi_gl_draw_start         (err_t* err, cwindow_t handle);
+void                    cgapi_gl_draw_end           (err_t* err, cwindow_t handle);
 
 void                    cgapi_handle_resize         (err_t* err, cwindow_t handle);
 void                    cgapi_deinitialize          (err_t* err);

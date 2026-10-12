@@ -48,25 +48,41 @@ void cgapi_opengl_cleanup(err_t* err, cwindow_t handle) {
 
 }
 
-void cgapi_opengl_test(cwindow_t handle) {
+cwindow_t cgapi_vulkan_hook(err_t* err, cwindow_t handle) {
+    
+    cdbg_err("vulkan is not implemented");
+    return CORE_CWINDOW_INVALID;
 
-    cwindow_linux_t* window = cwindow_get_data(NULL, handle);
-    while (wl_display_dispatch_pending(cwm_get_display()) != -1) {
-        
-        wl_display_flush(cwm_get_display());
-        eglMakeCurrent(egl_display, gl_windows[handle].egl_surface, gl_windows[handle].egl_surface, egl_shared_context);
+}
 
-        if (window->state & CORE_CWINDOW_CLOSED != 0)
-            break;
+void cgapi_vulkan_cleanup(err_t* err, cwindow_t handle) {
+    
+    cdbg_err("vulkan is not implemented");
+    return;
 
-        glViewport(0, 0, window->size[X], window->size[Y]);
-        glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
-        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+}
 
-        eglSwapBuffers(egl_display, gl_windows[handle].egl_surface);
-        wl_display_dispatch(cwm_get_display());
+void cgapi_gl_draw_start(err_t* err, cwindow_t handle) {
 
-    }
+    cwindow_linux_t* window = NULL;
+    catch(err, window = cwindow_get_data(err, handle), 
+        return;
+    );
+
+    wl_display_flush(cwm_get_display());
+    eglMakeCurrent(egl_display, gl_windows[handle].egl_surface, gl_windows[handle].egl_surface, egl_shared_context);
+
+
+}
+
+void cgapi_gl_draw_end(err_t* err, cwindow_t handle) {
+
+    cwindow_linux_t* window = NULL;
+    catch(err, window = cwindow_get_data(err, handle), 
+        return;
+    );
+    
+    eglSwapBuffers(egl_display, gl_windows[handle].egl_surface);
 
 }
 

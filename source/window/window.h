@@ -31,6 +31,7 @@ const char*             cwindow_get_title           (err_t* err, cwindow_t handl
 bool                    cwindow_get_fullscreen      (err_t* err, cwindow_t handle);
 bool                    cwindow_get_minimized       (err_t* err, cwindow_t handle);
 bool                    cwindow_get_resized         (err_t* err, cwindow_t handle);
+bool                    cwindow_get_closed          (err_t* err, cwindow_t handle);
 
 void                    cwindow_set_size            (err_t* err, cwindow_t handle, cvec2u_t value);
 void                    cwindow_set_title           (err_t* err, cwindow_t handle, const char* value);

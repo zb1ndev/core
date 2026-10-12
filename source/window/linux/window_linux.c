@@ -107,7 +107,12 @@ void cwindow_destroy(err_t* err, cwindow_t handle) {
 
 void cwindow_update(err_t* err) {
 
-    // Check all window state flags and handle them
+    if (wl_display_dispatch_pending(cwm_get_display()) < 0) {
+        throw(err, CORE_DISPDISPAT);
+        return;
+    }
+
+    // do stuff or smth
 
     return;
 
@@ -165,7 +170,7 @@ bool cwindow_get_fullscreen(err_t* err, cwindow_t handle) {
         return false;
     }
 
-    return windows[handle].state & CORE_CWINDOW_FULLSCREEN == 1;
+    return windows[handle].state & CORE_CWINDOW_FULLSCREEN != 0;
 
 }
 
@@ -176,7 +181,7 @@ bool cwindow_get_minimized(err_t* err, cwindow_t handle) {
         return false;
     }
 
-    return windows[handle].state & CORE_CWINDOW_MINIMIZED == 1;
+    return windows[handle].state & CORE_CWINDOW_MINIMIZED != 0;
 
 }
 
@@ -187,7 +192,18 @@ bool cwindow_get_resized(err_t* err, cwindow_t handle) {
         return false;
     }
 
-    return windows[handle].state & CORE_CWINDOW_RESIZED == 1;
+    return windows[handle].state & CORE_CWINDOW_RESIZED != 0;
+
+}
+
+bool cwindow_get_closed(err_t* err, cwindow_t handle) {
+
+    if (handle == CORE_CWINDOW_INVALID || windows[handle].state & CORE_CWINDOW_READY == 0) {
+        throw(err, CORE_WINNREADY);
+        return false;
+    }
+
+    return windows[handle].state & CORE_CWINDOW_CLOSED != 0;
 
 }
 

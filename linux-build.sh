@@ -1,10 +1,11 @@
 mkdir -p ./build/int ./build/examples
+rm -f ./build/int/*.o ./build/libcore.a
 
 object_files=()
 source_files=(
     "./source/math/math.c"
     "./source/debug/debug.c"
-    "./source/gapi/linux/gl_linux.c"
+    "./source/gapi/linux/gapi_linux.c"
     "./source/window/linux/window_linux.c"
     "./deps/wayland/xdg-shell-protocol.c"
 )
