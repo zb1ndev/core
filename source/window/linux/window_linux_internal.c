@@ -57,10 +57,9 @@ internal void wm_ping(void *data, struct xdg_wm_base *wm, uint32_t serial) {
 
 internal void reg_global(void* data, struct wl_registry* registry, uint32_t name, const char* iface, uint32_t version) {
     
-    if (!strcmp(iface, wl_compositor_interface.name))
+    if (strcmp(iface, wl_compositor_interface.name) == 0)
         compositor = wl_registry_bind(registry, name, &wl_compositor_interface, (version > 4 ? 4 : version));
-    
-    else if (!strcmp(iface, xdg_wm_base_interface.name)) {
+    else if (strcmp(iface, xdg_wm_base_interface.name) == 0) {
         xdg_wm_base = wl_registry_bind(registry, name, &xdg_wm_base_interface, (version > 2 ? 2 : version));
         xdg_wm_base_add_listener(xdg_wm_base, &wm_listener, NULL);
     }

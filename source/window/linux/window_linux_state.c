@@ -17,14 +17,12 @@ internal void cwindow_manager_initialize(err_t* err) {
     for (cwindow_t w = 0; w < CORE_CWINDOW_MAX; w++)
         free_windows[w] = (CORE_CWINDOW_MAX - 1) - w;
 
-    display = wl_display_connect(NULL);
-    if (display == NULL) {
+    if ((display = wl_display_connect(NULL)) == NULL) {
         throw(err, CORE_DISPCONREF);
         return;
     }
 
-    registry = wl_display_get_registry(display);
-    if (registry == NULL) {
+    if ((registry = wl_display_get_registry(display)) == NULL) {
         throw(err, CORE_DIPREG);
         return;
     }
