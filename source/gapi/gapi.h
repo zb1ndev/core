@@ -17,10 +17,10 @@ extern "C" {
 */
 
 void                    cgapi_opengl_hook           (err_t* err, cwindow_t handle);
-void                    cgapi_vulkan_hook           (err_t* err, cwindow_t handle);
+// void                    cgapi_vulkan_hook           (err_t* err, cwindow_t handle);
 
 void                    cgapi_opengl_cleanup        (err_t* err);
-void                    cgapi_vulkan_cleanup        (err_t* err);
+// void                    cgapi_vulkan_cleanup        (err_t* err);
 
 // @todo add getters and setters for opengl components
 

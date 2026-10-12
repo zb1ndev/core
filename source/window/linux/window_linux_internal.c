@@ -1,21 +1,14 @@
-#include <window/linux/window_linux.h>
+internal void toplevel_configure    (void *data, struct xdg_toplevel *tl, int32_t width, int32_t height, struct wl_array *states);
+internal void reg_global            (void* data, struct wl_registry* registry, uint32_t name, const char* iface, uint32_t version);
+internal void xdg_surface_configure (void *data, struct xdg_surface *xs, uint32_t serial);
+internal void reg_remove            (void* data, struct wl_registry* registry, uint32_t n);
+internal void wm_ping               (void *data, struct xdg_wm_base *wm, uint32_t serial);
+internal void toplevel_close        (void *data, struct xdg_toplevel *tl);
 
-/*
-    The Plan is to keep the rendering code and 
-    data completely seperate from the windowing 
-    system in the case I want to either add more
-    graphics apis or do software rendering.
-*/
-
-internal cwindow_linux_t windows[CORE_CWINDOW_MAX]  = {0};
-internal cwindow_t window_count                     = 0;
-internal cwindow_t free_windows[CORE_CWINDOW_MAX]   = {0};
-internal bool window_manager_initialized            = false;
-
-internal struct wl_display*     display;
-internal struct wl_registry*    registry;
-internal struct wl_compositor*  compositor;
-internal struct xdg_wm_base*    xdg_wm_base;
+internal const struct xdg_toplevel_listener toplevel_listener       = { toplevel_configure, toplevel_close  };
+internal const struct xdg_surface_listener  xdg_surface_listener    = { xdg_surface_configure               };
+internal const struct xdg_wm_base_listener  wm_listener             = { wm_ping                             };
+internal const struct wl_registry_listener  registry_listener       = { reg_global, reg_remove              };
 
 internal void toplevel_configure(void *data, struct xdg_toplevel *tl, int32_t width, int32_t height, struct wl_array *states) {
     
@@ -40,8 +33,6 @@ internal void toplevel_close(void *data, struct xdg_toplevel *tl) {
 
 }
 
-internal const struct xdg_toplevel_listener toplevel_listener = 
-    { toplevel_configure, toplevel_close };
 
 internal void xdg_surface_configure(void *data, struct xdg_surface *xs, uint32_t serial) {
     
@@ -51,8 +42,6 @@ internal void xdg_surface_configure(void *data, struct xdg_surface *xs, uint32_t
 
 }
 
-internal const struct xdg_surface_listener xdg_surface_listener = 
-    { xdg_surface_configure };
 
 internal void wm_ping(void *data, struct xdg_wm_base *wm, uint32_t serial) {
     
@@ -61,8 +50,6 @@ internal void wm_ping(void *data, struct xdg_wm_base *wm, uint32_t serial) {
 
 }
 
-internal const struct xdg_wm_base_listener wm_listener = 
-    { wm_ping };
 
 internal void reg_global(void* data, struct wl_registry* registry, uint32_t name, const char* iface, uint32_t version) {
     
@@ -83,6 +70,3 @@ internal void reg_remove(void* data, struct wl_registry* registry, uint32_t n) {
     (void)n; 
 
 }
-
-internal const struct wl_registry_listener registry_listener = 
-    { reg_global, reg_remove };

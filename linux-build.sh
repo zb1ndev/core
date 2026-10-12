@@ -2,7 +2,6 @@ mkdir -p ./build/int ./build/examples
 
 object_files=()
 source_files=(
-    "./source/core.c"
     "./source/math/math.c"
     "./source/debug/debug.c"
     "./source/gapi/linux/gl_linux.c"

@@ -1,11 +1,9 @@
 #include <core.h>
 
-void startup(err_t* err, int32_t argc, const char** argv) {}
+int32_t main(int32_t argc, const char** argv) {
 
-void update(err_t* err) {
+    cdbg_log("Hello World");
 
-    throw(err, CORE_EXIT);
+    return 0;
 
 }
-
-void shutdown(err_t* err) {}
