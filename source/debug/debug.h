@@ -10,20 +10,25 @@ typedef enum err_t err_t;
 enum err_t {
 
     CORE_SUCCESS        = 0,    // Success
-    CORE_EXIT           = 1,    // Exit Successfully
+    CORE_EXIT,                  // Exit Successfully
     CORE_PINVALID,              // Invalid Parameters
     CORE_WINMAXC,               // Max Window Count
     CORE_WINNREADY,             // Window Not Read / Initialized
     CORE_DISPCONREF,            // Display Connection Refused
     CORE_DISPDISPAT,            // Display Dispatch Failure
     CORE_DISPFLUSH,             // Display Flush Failure
+    CORE_EGLNODISP,             // No EGL Display Found
+    CORE_EGLINIT,               // EGL Failed to Initialize
+    CORE_EGLBIND,               // EGL Failed to Bind GAPI
+    CORE_EGLCONFIG,             // EGL Failed to Load Config
+    CORE_EGLCONTEXT,            // EGL Failed to Create Context
 
     CORE_ERROR_COUNT            // Number of Error Types
 
 };
 
-#define throw(err, msg) do{if((err)!=NULL)*(err)=(msg);}while(0)
-#define catch(err, call, except) do{call;if(err!=NULL&&*err!=CORE_SUCCESS)except}while(0)
+#define throw(err, msg)             do{if((err)!=NULL)*(err)=(msg);}while(0)
+#define catch(err, call, except)    do{call;if(err!=NULL&&*err!=CORE_SUCCESS)except}while(0)
 
 void                    _cdbg_eprint                (int64_t line, 
                                                     const char* function, 

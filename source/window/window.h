@@ -13,11 +13,11 @@ extern "C" {
 
 typedef uint8_t cwindow_t;
 
-#define CORE_CWINDOW_CLOSED                     (1<<0)
-#define CORE_CWINDOW_FULLSCREEN                 (1<<1)
-#define CORE_CWINDOW_MINIMIZED                  (1<<2)
-#define CORE_CWINDOW_RESIZED                    (1<<3)
-#define CORE_CWINDOW_READY                      (1<<4)
+#define CORE_CWINDOW_CLOSED                         (1<<0)
+#define CORE_CWINDOW_FULLSCREEN                     (1<<1)
+#define CORE_CWINDOW_MINIMIZED                      (1<<2)
+#define CORE_CWINDOW_RESIZED                        (1<<3)
+#define CORE_CWINDOW_READY                          (1<<4)
 
 cwindow_t               cwindow_create              (err_t* err, const char* title, cvec2u_t size);
 void                    cwindow_destroy             (err_t* err, cwindow_t handle);

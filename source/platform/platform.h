@@ -56,12 +56,11 @@ typedef uint8_t cplatform_t;
 
 #endif // _WIN32 || _WIN64 || __linux__
 
+#define CORE_PLATFORM_MASK                          (CORE_HAS_STDATOMIC | CORE_ARCH_64BIT | CORE_ARCH_32BIT | CORE_PLATFORM_LINUX | CORE_PLATFORM_WINDOWS)
 
 // @note Bit Structure: atomics | 64bit | 32bit | linux | windows;
 internal inline uint8_t         core_get_platform_mask       (void) {
-    return  CORE_HAS_STDATOMIC | CORE_ARCH_64BIT | 
-            CORE_ARCH_32BIT | CORE_PLATFORM_LINUX | 
-            CORE_PLATFORM_WINDOWS;
+    return  CORE_PLATFORM_MASK;
 }
 
 #if defined(__cplusplus)
