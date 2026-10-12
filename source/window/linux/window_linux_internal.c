@@ -17,9 +17,16 @@ internal void toplevel_configure(void *data, struct xdg_toplevel *tl, int32_t wi
     
     cwindow_linux_t* window = (cwindow_linux_t*)data;
     if (width > 0 && height > 0) {
+
         window->size[X] = width;
         window->size[Y] = height;
         window->state |= CORE_CWINDOW_RESIZED;
+
+        err_t err = CORE_SUCCESS;
+        catch(&err, cgapi_handle_resize(&err, window->handle),
+            cdbg_warnf("%d: failed to handle resize", err);
+        );
+        
     }
 
 }
@@ -33,7 +40,6 @@ internal void toplevel_close(void *data, struct xdg_toplevel *tl) {
 
 }
 
-
 internal void xdg_surface_configure(void *data, struct xdg_surface *xs, uint32_t serial) {
     
     cwindow_linux_t* window = (cwindow_linux_t*)data;
@@ -42,14 +48,12 @@ internal void xdg_surface_configure(void *data, struct xdg_surface *xs, uint32_t
 
 }
 
-
 internal void wm_ping(void *data, struct xdg_wm_base *wm, uint32_t serial) {
     
     (void)data;
     xdg_wm_base_pong(wm, serial);
 
 }
-
 
 internal void reg_global(void* data, struct wl_registry* registry, uint32_t name, const char* iface, uint32_t version) {
     

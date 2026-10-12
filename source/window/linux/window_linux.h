@@ -7,11 +7,13 @@ extern "C" {
 #include <platform/platform.h>
 #include <window/window.h>
 #include <debug/debug.h>
+#include <gapi/gapi.h>
 #include <math/math.h>
 
 typedef struct cwindow_linux_t cwindow_linux_t;
 struct cwindow_linux_t {
 
+    cwindow_t           handle;
     const char*         title;
 
     cvec2u_t            size;
@@ -22,6 +24,8 @@ struct cwindow_linux_t {
     struct xdg_toplevel*toplevel;
 
     uint64_t            state;
+
+    void (*gapi_cleanup)(err_t* err, cwindow_t handle);
 
 };
 

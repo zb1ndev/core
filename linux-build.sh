@@ -10,7 +10,7 @@ source_files=(
 )
 
 includes="-I./deps/ -I./source/"
-linkages="-lwayland-client -lwayland-cursor -lwayland-egl -lEGL -lGLESv2 -lrt"
+linkages="-lwayland-client -lwayland-cursor -lwayland-egl -lGL -lEGL -lGLESv2 -lrt"
 
 for file in "${source_files[@]}"; do
     filename="${file##*/}"

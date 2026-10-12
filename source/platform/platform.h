@@ -39,6 +39,7 @@ typedef uint8_t cplatform_t;
 #if defined(__linux__)
 
     #include <EGL/egl.h>
+    #include <GL/gl.h>
     #include <wayland-egl.h>
     #include <wayland-client.h>
     #include <wayland/xdg-shell-client-protocol.h>

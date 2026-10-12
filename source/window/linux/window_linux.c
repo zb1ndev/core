@@ -2,10 +2,9 @@
 
 cwindow_t cwindow_create(err_t* err, const char* title, cvec2u_t size) {
 
-    if (window_manager_initialized == false)
-        catch(err, cwindow_manager_initialize(err), 
-            return CORE_CWINDOW_INVALID;
-        );
+    if (window_manager_initialized == false) catch(err, cwindow_manager_initialize(err), 
+        return CORE_CWINDOW_INVALID;
+    );
 
     if (window_count >= CORE_CWINDOW_MAX) {
         throw(err, CORE_WINMAXC);
@@ -16,28 +15,73 @@ cwindow_t cwindow_create(err_t* err, const char* title, cvec2u_t size) {
     cwindow_linux_t* window = &windows[result];
 
     *window = (cwindow_linux_t) {
+        .handle = result,
         .title = title,
         .size = {size[X], size[Y]},
         .sizef = {(float)size[X], (float)size[Y]}
     };
- 
+    
+    // @todo check that these are valid lol
     window->surface = wl_compositor_create_surface(compositor);
- 
+    if (window->surface == NULL) {
+        throw(err, CORE_CREASURF);
+        return CORE_CWINDOW_INVALID;
+    }
+
     window->xdg_surface = xdg_wm_base_get_xdg_surface(xdg_wm_base, window->surface);
-    xdg_surface_add_listener(window->xdg_surface, &xdg_surface_listener, window);
+    if (window->xdg_surface == NULL) {
+        wl_surface_destroy(window->surface);
+        throw(err, CORE_XDGGETSURF);
+        return CORE_CWINDOW_INVALID;
+    }
+
+    if (xdg_surface_add_listener(window->xdg_surface, &xdg_surface_listener, window) < 0) {
+        xdg_surface_destroy(window->xdg_surface);
+        wl_surface_destroy(window->surface);
+        throw(err, CORE_XDGSADDLIS);
+        return CORE_CWINDOW_INVALID;
+    }
  
     window->toplevel = xdg_surface_get_toplevel(window->xdg_surface);
-    xdg_toplevel_add_listener(window->toplevel, &toplevel_listener, window);
+    if (window->xdg_surface == NULL) {
+        xdg_surface_destroy(window->xdg_surface);
+        wl_surface_destroy(window->surface);
+        throw(err, CORE_XDGGETTL);
+        return CORE_CWINDOW_INVALID;
+    }
+
+    if (xdg_toplevel_add_listener(window->toplevel, &toplevel_listener, window) < 0) {
+        xdg_toplevel_destroy(window->toplevel);
+        xdg_surface_destroy(window->xdg_surface);
+        wl_surface_destroy(window->surface);
+        throw(err, CORE_XDGTLADDLIS);
+        return CORE_CWINDOW_INVALID;
+    }
+    
     xdg_toplevel_set_title(window->toplevel, title);
- 
     wl_surface_commit(window->surface);
-    wl_display_roundtrip(display);
+
+    if (wl_display_roundtrip(display) < 0) {
+        xdg_toplevel_destroy(window->toplevel);
+        xdg_surface_destroy(window->xdg_surface);
+        wl_surface_destroy(window->surface);
+        throw(err, CORE_DISPRT);
+        return CORE_CWINDOW_INVALID;
+    }
 
     return result;
 
 }
 
 void cwindow_destroy(err_t* err, cwindow_t handle) {
+
+    if (handle == CORE_CWINDOW_INVALID || windows[handle].state & CORE_CWINDOW_READY == 0) {
+        throw(err, CORE_WINNREADY);
+        return;
+    }
+
+    if (windows[handle].gapi_cleanup != NULL) 
+        catch(err, windows[handle].gapi_cleanup(err, handle), {});
 
     xdg_toplevel_destroy(windows[handle].toplevel);
     xdg_surface_destroy(windows[handle].xdg_surface);
@@ -55,11 +99,10 @@ void cwindow_destroy(err_t* err, cwindow_t handle) {
         .xdg_surface = NULL
     };
  
-    if (--window_count <= 0)
-        catch(err, cwindow_manager_deinitialize(err), 
-            return;
-        );
-    
+    if (--window_count <= 0) catch(err, cwindow_manager_deinitialize(err), 
+        return;
+    );
+
 }
 
 void cwindow_update(err_t* err) {
@@ -72,10 +115,15 @@ void cwindow_update(err_t* err) {
 
 void cwindow_get_size(err_t* err, cwindow_t handle, cvec2u_t* out) {
 
-    if (windows[handle].state & CORE_CWINDOW_READY == 0) {
+    if (handle == CORE_CWINDOW_INVALID || windows[handle].state & CORE_CWINDOW_READY == 0) {
         throw(err, CORE_WINNREADY);
         return;
     }
+
+    if (out == NULL) {
+        throw(err, CORE_PINVALID);
+        return;
+    }    
 
     (*out)[X] = windows[handle].size[X];
     (*out)[Y] = windows[handle].size[Y];
@@ -84,10 +132,15 @@ void cwindow_get_size(err_t* err, cwindow_t handle, cvec2u_t* out) {
 
 void cwindow_get_sizef(err_t* err, cwindow_t handle, cvec2f_t* out) {
 
-    if (windows[handle].state & CORE_CWINDOW_READY == 0) {
+    if (handle == CORE_CWINDOW_INVALID || windows[handle].state & CORE_CWINDOW_READY == 0) {
         throw(err, CORE_WINNREADY);
         return;
     }
+
+    if (out == NULL) {
+        throw(err, CORE_PINVALID);
+        return;
+    }    
 
     (*out)[X] = windows[handle].sizef[X];
     (*out)[Y] = windows[handle].sizef[Y];
@@ -96,9 +149,9 @@ void cwindow_get_sizef(err_t* err, cwindow_t handle, cvec2f_t* out) {
 
 const char* cwindow_get_title(err_t* err, cwindow_t handle) {
 
-    if (windows[handle].state & CORE_CWINDOW_READY == 0) {
+    if (handle == CORE_CWINDOW_INVALID || windows[handle].state & CORE_CWINDOW_READY == 0) {
         throw(err, CORE_WINNREADY);
-        return false;
+        return NULL;
     }
 
     return windows[handle].title;
@@ -107,7 +160,7 @@ const char* cwindow_get_title(err_t* err, cwindow_t handle) {
 
 bool cwindow_get_fullscreen(err_t* err, cwindow_t handle) {
 
-    if (windows[handle].state & CORE_CWINDOW_READY == 0) {
+    if (handle == CORE_CWINDOW_INVALID || windows[handle].state & CORE_CWINDOW_READY == 0) {
         throw(err, CORE_WINNREADY);
         return false;
     }
@@ -118,7 +171,7 @@ bool cwindow_get_fullscreen(err_t* err, cwindow_t handle) {
 
 bool cwindow_get_minimized(err_t* err, cwindow_t handle) {
 
-    if (windows[handle].state & CORE_CWINDOW_READY == 0) {
+    if (handle == CORE_CWINDOW_INVALID || windows[handle].state & CORE_CWINDOW_READY == 0) {
         throw(err, CORE_WINNREADY);
         return false;
     }
@@ -129,7 +182,7 @@ bool cwindow_get_minimized(err_t* err, cwindow_t handle) {
 
 bool cwindow_get_resized(err_t* err, cwindow_t handle) {
 
-    if (windows[handle].state & CORE_CWINDOW_READY == 0) {
+    if (handle == CORE_CWINDOW_INVALID || windows[handle].state & CORE_CWINDOW_READY == 0) {
         throw(err, CORE_WINNREADY);
         return false;
     }
@@ -140,7 +193,7 @@ bool cwindow_get_resized(err_t* err, cwindow_t handle) {
 
 void cwindow_set_size(err_t* err, cwindow_t handle, cvec2u_t value) {
 
-    if (windows[handle].state & CORE_CWINDOW_READY == 0) {
+    if (handle == CORE_CWINDOW_INVALID || windows[handle].state & CORE_CWINDOW_READY == 0) {
         throw(err, CORE_WINNREADY);
         return;
     }
@@ -156,10 +209,15 @@ void cwindow_set_size(err_t* err, cwindow_t handle, cvec2u_t value) {
 
 void cwindow_set_title(err_t* err, cwindow_t handle, const char* value) {
 
-    if (windows[handle].state & CORE_CWINDOW_READY == 0) {
+    if (handle == CORE_CWINDOW_INVALID || windows[handle].state & CORE_CWINDOW_READY == 0) {
         throw(err, CORE_WINNREADY);
         return;
     }
+
+    if (value == NULL) {
+        throw(err, CORE_PINVALID);
+        return;
+    }    
 
     windows[handle].title = value;
     xdg_toplevel_set_title(windows[handle].toplevel, value);
@@ -168,10 +226,15 @@ void cwindow_set_title(err_t* err, cwindow_t handle, const char* value) {
 
 void cwindow_set_icon(err_t* err, cwindow_t handle, uint8_t* data, uint64_t data_size) {
 
-    (void)err;
-    (void)handle;
-    (void)data;
-    (void)data_size;
+    if (handle == CORE_CWINDOW_INVALID || windows[handle].state & CORE_CWINDOW_READY == 0) {
+        throw(err, CORE_WINNREADY);
+        return;
+    }
+
+    if (data == NULL || data_size == 0) {
+        throw(err, CORE_PINVALID);
+        return;
+    }    
 
     cdbg_warn("not implemented");
 
@@ -179,7 +242,7 @@ void cwindow_set_icon(err_t* err, cwindow_t handle, uint8_t* data, uint64_t data
 
 void cwindow_set_fullscreen(err_t* err, cwindow_t handle, bool value) {
 
-    if (windows[handle].state & CORE_CWINDOW_READY == 0) {
+    if (handle == CORE_CWINDOW_INVALID || windows[handle].state & CORE_CWINDOW_READY == 0) {
         throw(err, CORE_WINNREADY);
         return;
     }
@@ -193,7 +256,7 @@ void cwindow_set_fullscreen(err_t* err, cwindow_t handle, bool value) {
 
 void cwindow_set_minimized(err_t* err, cwindow_t handle, bool value) {
     
-    if (windows[handle].state & CORE_CWINDOW_READY == 0) {
+    if (handle == CORE_CWINDOW_INVALID || windows[handle].state & CORE_CWINDOW_READY == 0) {
         throw(err, CORE_WINNREADY);
         return;
     }
@@ -206,7 +269,7 @@ void cwindow_set_minimized(err_t* err, cwindow_t handle, bool value) {
 
 void cwindow_set_resized(err_t* err, cwindow_t handle, bool value) {
 
-    if (windows[handle].state & CORE_CWINDOW_READY == 0) {
+    if (handle == CORE_CWINDOW_INVALID || windows[handle].state & CORE_CWINDOW_READY == 0) {
         throw(err, CORE_WINNREADY);
         return;
     }
@@ -219,13 +282,18 @@ void cwindow_set_resized(err_t* err, cwindow_t handle, bool value) {
 
 void cwindow_close(err_t* err, cwindow_t handle) {
 
+    if (handle == CORE_CWINDOW_INVALID || windows[handle].state & CORE_CWINDOW_READY == 0) {
+        throw(err, CORE_WINNREADY);
+        return;
+    }
+
     windows[handle].state |= CORE_CWINDOW_CLOSED;
 
 }
 
 cwindow_linux_t* cwindow_get_data(err_t* err, cwindow_t handle) {
 
-    if (windows[handle].state & CORE_CWINDOW_READY == 0) {
+    if (handle == CORE_CWINDOW_INVALID || windows[handle].state & CORE_CWINDOW_READY == 0) {
         throw(err, CORE_WINNREADY);
         return NULL;
     }

@@ -13,8 +13,16 @@ enum err_t {
     CORE_EXIT,                  // Exit Successfully
     CORE_PINVALID,              // Invalid Parameters
     CORE_WINMAXC,               // Max Window Count
+    CORE_CREASURF,              // Failed to Create Surface
+    CORE_XDGGETSURF,            // XDG Failed to Get Surface
+    CORE_XDGSADDLIS,            // XDG Failed to Add Listener to Surface
+    CORE_XDGGETTL,              // XDG Failed to Get Top-Level
+    CORE_XDGTLADDLIS,           // XDG Failed to Add Listener to Top-Level
+    CORE_DISPRT,                // Failed to do a Display Round Trip
     CORE_WINNREADY,             // Window Not Read / Initialized
     CORE_DISPCONREF,            // Display Connection Refused
+    CORE_DIPREG,                // Display Registry Not Found
+    CORE_REGADDLIS,             // Display Registry Failed to Add Listener
     CORE_DISPDISPAT,            // Display Dispatch Failure
     CORE_DISPFLUSH,             // Display Flush Failure
     CORE_EGLNODISP,             // No EGL Display Found
@@ -22,6 +30,8 @@ enum err_t {
     CORE_EGLBIND,               // EGL Failed to Bind GAPI
     CORE_EGLCONFIG,             // EGL Failed to Load Config
     CORE_EGLCONTEXT,            // EGL Failed to Create Context
+    CORE_EGLCREATWIN,           // EGL Failed to Create Window
+    CORE_EGLCREATSURF,          // EGL Failed to Create Surface
 
     CORE_ERROR_COUNT            // Number of Error Types
 

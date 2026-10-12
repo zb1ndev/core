@@ -6,10 +6,12 @@ struct cwindow_gl_t {
 
     EGLSurface              egl_surface;
     struct wl_egl_window*   egl_window;
+    bool                    initialized;
 
 };
 
 internal cwindow_gl_t   gl_windows[CORE_CWINDOW_MAX]    = {0};
+internal uint8_t        gl_window_count                 = 0;
 internal bool           gl_initialized                  = false;
 
 internal EGLConfig      egl_config;
@@ -24,12 +26,12 @@ internal void cgapi_opengl_initialize(err_t* err) {
         return;
     }
 
-    if (!eglInitialize(cwm_get_display(), NULL, NULL)) {
+    if (eglInitialize(egl_display, NULL, NULL) == EGL_FALSE) {
         throw(err, CORE_EGLINIT);
         return;
     }
 
-    if (!eglBindAPI(EGL_OPENGL_API)) {
+    if (eglBindAPI(EGL_OPENGL_API) == EGL_FALSE) {
         throw(err, CORE_EGLBIND);
         return;
     }
@@ -48,7 +50,9 @@ internal void cgapi_opengl_initialize(err_t* err) {
     };
 
     EGLint config_count = 0;
-    if (!eglChooseConfig(cwm_get_display(), attributes, &egl_config, 1, &config_count) || config_count == 0) {
+    if (eglChooseConfig(egl_display, attributes, &egl_config, 1, &config_count) == EGL_FALSE
+        || config_count == 0
+    ) {
         throw(err, CORE_EGLCONFIG);
         return;
     }
@@ -61,7 +65,7 @@ internal void cgapi_opengl_initialize(err_t* err) {
     
     };
 
-    egl_shared_context = eglCreateContext(cwm_get_display(), egl_config, EGL_NO_CONTEXT, context_attributes);
+    egl_shared_context = eglCreateContext(egl_display, egl_config, EGL_NO_CONTEXT, context_attributes);
     if (egl_shared_context == EGL_NO_CONTEXT) {
         throw(err, CORE_EGLCONTEXT);
         return;
