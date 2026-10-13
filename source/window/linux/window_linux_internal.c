@@ -98,16 +98,59 @@ internal void wm_ping(void* data, struct xdg_wm_base* wm, uint32_t serial) {
 }
 
 internal void reg_global(void* data, struct wl_registry* registry, uint32_t name, const char* iface, uint32_t version) {
+
+    if (version < 1)    
+        return;
     
-    if (strcmp(iface, wl_compositor_interface.name) == 0)
-        compositor = wl_registry_bind(registry, name, &wl_compositor_interface, (version > 4 ? 4 : version));
-    else if (strcmp(iface, xdg_wm_base_interface.name) == 0) {
-        xdg_wm_base = wl_registry_bind(registry, name, &xdg_wm_base_interface, (version > 2 ? 2 : version));
-        xdg_wm_base_add_listener(xdg_wm_base, &wm_listener, NULL);
+    if (strcmp(iface, wl_compositor_interface.name) == 0) {
+
+        if (version > 4) {
+            cdbg_warnf("using wayland compositor version 4 instead of %d for compatibility", version);
+            version = 4;
+        }
+    
+        compositor = wl_registry_bind(registry, name, &wl_compositor_interface, version);
+        if (compositor == NULL) {
+            cdbg_err("failed to bind wayland compositor");
+            return;
+        }
+
+    } else if (strcmp(iface, xdg_wm_base_interface.name) == 0) {
+        
+        if (version > 2) {
+            cdbg_warnf("using xdg_wm_base version 2 instead of %d for compatibility", version);
+            version = 2;
+        }
+
+        xdg_wm_base = wl_registry_bind(registry, name, &xdg_wm_base_interface, version);
+        if (xdg_wm_base == NULL) { 
+            cdbg_err("failed to bind xdg_wm_base");
+            return;
+        }
+
+        if (xdg_wm_base_add_listener(xdg_wm_base, &wm_listener, NULL) < 0) {
+            cdbg_err("failed to add xdg_wm_base listener");
+            return;
+        }
+
     } else if (strcmp(iface, wl_seat_interface.name) == 0) {
-        if (version < 7) return; // @note assume version 7, im not implementing all that
-        seat = wl_registry_bind(registry, name, &wl_seat_interface, version > 9 ? 9 : version);
-        wl_seat_add_listener(seat, &seat_listener, NULL);
+        
+        if (version > 7) {
+            cdbg_warnf("using wayland seat version 7 instead of %d for compatibility", version);
+            version = 7;
+        }
+
+        seat = wl_registry_bind(registry, name, &wl_seat_interface, version);
+        if (seat == NULL) { 
+            cdbg_err("failed to bind wayland seat");
+            return;
+        }
+
+        if (wl_seat_add_listener(seat, &seat_listener, NULL) < 0) {
+            cdbg_err("failed to add wayland seat listener");
+            return;
+        }
+
     }
 
 }
@@ -125,19 +168,29 @@ internal void seat_capabilities(void* data, struct wl_seat* wl_seat, uint32_t ca
     (void)data;
 
     if (capabilities & WL_SEAT_CAPABILITY_KEYBOARD > 0 && keyboard == NULL) {
+
         keyboard = wl_seat_get_keyboard(wl_seat);
-        wl_keyboard_add_listener(keyboard, &keyboard_listener, NULL);
+        if (wl_keyboard_add_listener(keyboard, &keyboard_listener, NULL) < 0)
+            cdbg_err("failed to add wayland keyboard listener");
+    
     } else if (capabilities & WL_SEAT_CAPABILITY_KEYBOARD == 0 && keyboard != NULL) {
+    
         wl_keyboard_release(keyboard);
         keyboard = NULL;
+    
     }
  
     if (capabilities & WL_SEAT_CAPABILITY_POINTER > 0 && pointer == NULL) {
+    
         pointer = wl_seat_get_pointer(wl_seat);
-        wl_pointer_add_listener(pointer, &pointer_listener, NULL);
+        if (wl_pointer_add_listener(pointer, &pointer_listener, NULL) < 0)
+            cdbg_err("failed to add wayland pointer listener");
+    
     } else if (capabilities & WL_SEAT_CAPABILITY_POINTER == 0 && pointer != NULL) {
+    
         wl_pointer_release(pointer);
         pointer = NULL;
+    
     }
 
 }
