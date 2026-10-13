@@ -6,6 +6,7 @@ extern "C" {
 
 #include <platform/platform.h>
 #include <debug/debug.h>
+#include <input/input.h>
 #include <math/math.h>
 
 #define CORE_CWINDOW_MAX                            UINT8_MAX

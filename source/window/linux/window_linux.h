@@ -6,6 +6,7 @@ extern "C" {
 
 #include <platform/platform.h>
 #include <window/window.h>
+#include <input/input.h>
 #include <debug/debug.h>
 #include <gapi/gapi.h>
 #include <math/math.h>
