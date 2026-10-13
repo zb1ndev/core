@@ -10,6 +10,7 @@ typedef struct cwindow_linux_t cwindow_linux_t;
 struct cwindow_linux_t {
 
     cwindow_t           handle;
+    cinput_t            input;
     const char*         title;
 
     cvec2u_t            size;

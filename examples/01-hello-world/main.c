@@ -22,6 +22,7 @@ int32_t main(int32_t argc, const char** argv) {
         return 1;
     }
 
+
     cvec2u_t window_size = {0};
     cwindow_get_size(NULL, window, &window_size);
 

@@ -9,6 +9,9 @@ internal struct wl_display*     display         = NULL;
 internal struct wl_registry*    registry        = NULL;
 internal struct wl_compositor*  compositor      = NULL;
 internal struct xdg_wm_base*    xdg_wm_base     = NULL;
+internal struct wl_seat*        seat            = NULL;
+internal struct wl_keyboard*    keyboard        = NULL;
+internal struct wl_pointer*     pointer         = NULL;
 
 #include <window/linux/window_linux_internal.c>
 
@@ -50,10 +53,35 @@ internal void cwindow_manager_deinitialize(err_t* err) {
         throw(err, *err);
     );
 
-    xdg_wm_base_destroy(xdg_wm_base);
-    wl_compositor_destroy(compositor);
-    wl_registry_destroy(registry);
-    wl_display_disconnect(display);
+    if (keyboard != NULL) {
+        wl_keyboard_release(keyboard);
+        keyboard = NULL;
+    }
+
+    if (pointer != NULL) {
+        wl_pointer_release(pointer);
+        pointer = NULL;
+    }
+
+    if (xdg_wm_base != NULL) {
+        xdg_wm_base_destroy(xdg_wm_base);
+        xdg_wm_base = NULL;
+    }
+    
+    if (compositor != NULL) {
+        wl_compositor_destroy(compositor);
+        compositor = NULL;
+    }
+
+    if (registry != NULL) {
+        wl_registry_destroy(registry);
+        registry = NULL;
+    }
+
+    if (display != NULL) {
+        wl_display_disconnect(display);
+        display = NULL;
+    }
 
     window_manager_initialized = false;
 
