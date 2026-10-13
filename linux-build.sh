@@ -3,6 +3,7 @@ rm -f ./build/int/*.o ./build/libcore.a
 
 object_files=()
 source_files=(
+    "./deps/glad/glad.c"
     "./source/math/math.c"
     "./source/debug/debug.c"
     "./source/gapi/linux/gapi_linux.c"

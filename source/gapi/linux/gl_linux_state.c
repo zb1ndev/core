@@ -71,6 +71,16 @@ internal void cgapi_opengl_initialize(err_t* err) {
         return;
     }
 
+    if (eglMakeCurrent(egl_display, EGL_NO_SURFACE, EGL_NO_SURFACE, egl_shared_context) == EGL_FALSE) {
+        throw(err, CORE_EGLMAKCUR);
+        return;
+    }
+
+    if (gladLoadGLLoader((GLADloadproc)eglGetProcAddress) == EGL_FALSE) {
+        throw(err, CORE_GLADLOAD);
+        return;
+    }
+
     gl_initialized = true;
 
 }

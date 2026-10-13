@@ -30,6 +30,8 @@ enum err_t {
     CORE_EGLBIND,               // EGL Failed to Bind GAPI
     CORE_EGLCONFIG,             // EGL Failed to Load Config
     CORE_EGLCONTEXT,            // EGL Failed to Create Context
+    CORE_EGLMAKCUR,             // EGL Failed to Make Context Current
+    CORE_GLADLOAD,              // GLAD Failed to Load
     CORE_EGLCREATWIN,           // EGL Failed to Create Window
     CORE_EGLCREATSURF,          // EGL Failed to Create Surface
 
