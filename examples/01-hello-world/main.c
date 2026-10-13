@@ -18,7 +18,7 @@ int32_t main(int32_t argc, const char** argv) {
     err_t err = CORE_SUCCESS;
     cwindow_t window = cgapi_opengl_hook(&err, cwindow_create(NULL, "Hello World", (cvec2u_t){1920, 1080}));
     if (window == CORE_CWINDOW_INVALID) {
-        cdbg_errf("fuck: %d", err);
+        throw(&err, CORE_WINNREADY);
         return 1;
     }
 

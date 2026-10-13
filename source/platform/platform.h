@@ -12,15 +12,7 @@ extern "C" {
 #include <string.h>
 #include <stdbool.h>
 #include <stdarg.h>
-
-#define CORE_HAS_STDATOMIC                          (0U)
-#if defined(__STDC_VERSION__) && (__STDC_VERSION__ >= 201112L)
-    #if !defined(__STDC_NO_ATOMICS__)
-        #include <stdatomic.h>
-        #undef CORE_HAS_STDATOMIC
-        #define CORE_HAS_STDATOMIC                  (1<<4)
-    #endif // __STDC_NO_ATOMICS__
-#endif // __STDC_VERSION__
+#include <stdatomic.h>                              // @note assumes c11+ compiler
 
 #define CORE_ARCH_64BIT                             (0U)
 #define CORE_ARCH_32BIT                             (0U)
@@ -55,7 +47,7 @@ extern "C" {
 
 #endif // _WIN32 || _WIN64 || __linux__
 
-#define CORE_PLATFORM_MASK                          (CORE_HAS_STDATOMIC | CORE_ARCH_64BIT | CORE_ARCH_32BIT | CORE_PLATFORM_LINUX | CORE_PLATFORM_WINDOWS)
+#define CORE_PLATFORM_MASK                          (CORE_ARCH_64BIT | CORE_ARCH_32BIT | CORE_PLATFORM_LINUX | CORE_PLATFORM_WINDOWS)
 
 typedef uint8_t cplatform_t;                        // @note Bit Structure: atomics | 64bit | 32bit | linux | windows;
 internal inline cplatform_t cplatform_get_mask(void) {

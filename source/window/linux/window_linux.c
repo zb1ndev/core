@@ -2,10 +2,12 @@
 
 cwindow_t cwindow_create(err_t* err, const char* title, cvec2u_t size) {
 
-    if (window_manager_initialized == false) catch(err, cwindow_manager_initialize(err), 
-        return CORE_CWINDOW_INVALID;
-    );
-
+    if (window_manager_initialized == false)  {
+        catch(err, cwindow_manager_initialize(err),
+            return CORE_CWINDOW_INVALID;
+        );
+    }
+   
     if (window_count >= CORE_CWINDOW_MAX) {
         throw(err, CORE_WINMAXC);
         return CORE_CWINDOW_INVALID;
@@ -80,28 +82,29 @@ void cwindow_destroy(err_t* err, cwindow_t handle) {
         return;
     }
 
-    if (windows[handle].gapi_cleanup != NULL) 
-        catch(err, windows[handle].gapi_cleanup(err, handle), {});
+    cwindow_linux_t* window = &windows[handle];
+    if (window->gapi_cleanup != NULL)  {
+        catch(err, window->gapi_cleanup(err, handle),
+            throw(err, *err);    
+        );
+    }
 
-    xdg_toplevel_destroy(windows[handle].toplevel);
-    xdg_surface_destroy(windows[handle].xdg_surface);
-    wl_surface_destroy(windows[handle].surface);
+    xdg_toplevel_destroy(window->toplevel);
+    xdg_surface_destroy(window->xdg_surface);
+    wl_surface_destroy(window->surface);
 
     free_windows[CORE_CWINDOW_MAX - window_count] = handle;
     
-    windows[handle] = (cwindow_linux_t) {
-        .title = NULL,
-        .size = {0,0},
-        .sizef = {0.0f,0.0f},
-        .state = 0UL,
-        .surface = NULL,
-        .toplevel = NULL,
-        .xdg_surface = NULL
+    (*window) = (cwindow_linux_t) {
+        .title = NULL, .size = {0,0},   .sizef = {0.0f,0.0f},
+        .state = 0UL,  .surface = NULL, .toplevel = NULL, .xdg_surface = NULL
     };
  
-    if (--window_count <= 0) catch(err, cwindow_manager_deinitialize(err), 
-        return;
-    );
+    if (--window_count <= 0) {
+        catch(err, cwindow_manager_deinitialize(err), 
+            return;
+        );
+    }
 
 }
 
@@ -318,7 +321,7 @@ cwindow_linux_t* cwindow_get_data(err_t* err, cwindow_t handle) {
 
 }
 
-struct wl_display* cwm_get_display(void)        { return display;       }
-struct wl_registry* cwm_get_registry(void)      { return registry;      }
-struct wl_compositor* cwm_get_compositor(void)  { return compositor;    }
-struct xdg_wm_base* cwm_get_xdg_wm_base(void)   { return xdg_wm_base;   }
+inline struct wl_display*       cwm_get_display(void)       { return display;       }
+inline struct wl_registry*      cwm_get_registry(void)      { return registry;      }
+inline struct wl_compositor*    cwm_get_compositor(void)    { return compositor;    }
+inline struct xdg_wm_base*      cwm_get_xdg_wm_base(void)   { return xdg_wm_base;   }

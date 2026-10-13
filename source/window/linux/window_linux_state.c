@@ -47,7 +47,7 @@ internal void cwindow_manager_initialize(err_t* err) {
 internal void cwindow_manager_deinitialize(err_t* err) {
 
     catch(err, cgapi_deinitialize(err), 
-        cdbg_warnf("%d: failed to deinitialize gapi", err!=NULL?*err:-1);
+        throw(err, *err);
     );
 
     xdg_wm_base_destroy(xdg_wm_base);

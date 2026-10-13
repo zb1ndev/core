@@ -24,7 +24,7 @@ internal void toplevel_configure(void *data, struct xdg_toplevel *tl, int32_t wi
 
         err_t err = CORE_SUCCESS;
         catch(&err, cgapi_handle_resize(&err, window->handle),
-            cdbg_warnf("%d: failed to handle resize", err);
+            throw(&err, err);
         );
         
     }
