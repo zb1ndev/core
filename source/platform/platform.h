@@ -13,8 +13,6 @@ extern "C" {
 #include <stdbool.h>
 #include <stdarg.h>
 
-typedef uint8_t cplatform_t;
-
 #define CORE_HAS_STDATOMIC                          (0U)
 #if defined(__STDC_VERSION__) && (__STDC_VERSION__ >= 201112L)
     #if !defined(__STDC_NO_ATOMICS__)
@@ -59,9 +57,9 @@ typedef uint8_t cplatform_t;
 
 #define CORE_PLATFORM_MASK                          (CORE_HAS_STDATOMIC | CORE_ARCH_64BIT | CORE_ARCH_32BIT | CORE_PLATFORM_LINUX | CORE_PLATFORM_WINDOWS)
 
-// @note Bit Structure: atomics | 64bit | 32bit | linux | windows;
-internal inline uint8_t         core_get_platform_mask       (void) {
-    return  CORE_PLATFORM_MASK;
+typedef uint8_t cplatform_t;                        // @note Bit Structure: atomics | 64bit | 32bit | linux | windows;
+internal inline cplatform_t cplatform_get_mask(void) {
+    return CORE_PLATFORM_MASK;
 }
 
 #if defined(__cplusplus)

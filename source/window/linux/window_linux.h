@@ -4,12 +4,7 @@
 extern "C" {
 #endif // __cplusplus
 
-#include <platform/platform.h>
 #include <window/window.h>
-#include <input/input.h>
-#include <debug/debug.h>
-#include <gapi/gapi.h>
-#include <math/math.h>
 
 typedef struct cwindow_linux_t cwindow_linux_t;
 struct cwindow_linux_t {

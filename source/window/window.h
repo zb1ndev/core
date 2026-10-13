@@ -4,10 +4,7 @@
 extern "C" {
 #endif // __cplusplus
 
-#include <platform/platform.h>
-#include <debug/debug.h>
-#include <input/input.h>
-#include <math/math.h>
+#include <utils/utils.h>
 
 #define CORE_CWINDOW_MAX                            UINT8_MAX
 #define CORE_CWINDOW_INVALID                        UINT8_MAX
@@ -43,6 +40,10 @@ void                    cwindow_set_minimized       (err_t* err, cwindow_t handl
 void                    cwindow_set_resized         (err_t* err, cwindow_t handle, bool value);
 
 void                    cwindow_close               (err_t* err, cwindow_t handle);
+
+// @note down here as gapi and input need type resolution before implementation
+#include <input/input.h>
+#include <gapi/gapi.h>
 
 #if defined(__cplusplus)
 }

@@ -4,10 +4,7 @@
 extern "C" {
 #endif // __cplusplus
 
-#include <platform/platform.h>
 #include <window/window.h>
-#include <debug/debug.h>
-#include <math/math.h>
 
 /*
     All GAPI is going to do, is create a context with the desired window

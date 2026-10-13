@@ -4,10 +4,7 @@
 extern "C" {
 #endif // __cplusplus
 
-#include <platform/platform.h>
 #include <window/window.h>
-#include <debug/debug.h>
-#include <math/math.h>
 
 /*
     Declare the structure of per-window state
