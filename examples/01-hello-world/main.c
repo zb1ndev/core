@@ -93,8 +93,10 @@ int32_t main(int32_t argc, const char** argv) {
         cwindow_update(NULL);
         cgraf_draw_start(NULL, window);
 
+        float brightness = cinput_get_button(NULL, CORE_MOUSEB_LEFT) ? 0.5f : 0.1f;
+
         glViewport(0, 0, window_size[0], window_size[1]);
-        glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
+        glClearColor(brightness, brightness, brightness, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
         glUseProgram(shader_program);

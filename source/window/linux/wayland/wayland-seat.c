@@ -49,6 +49,10 @@ internal void pointer_motion(void* data, struct wl_pointer* wl_pointer, uint32_t
 
 internal void pointer_button(void* data, struct wl_pointer* wl_pointer, uint32_t serial, uint32_t time, uint32_t button, uint32_t state) {
 
+    if (button <= CORE_MOUSEB_MIDDLE && button >= CORE_MOUSEB_LEFT)
+        cim_set_state(button, state);
+    cdbg_logf("button: %u, state: %u", button, state);
+
 }
 
 internal void pointer_axis(void* data, struct wl_pointer* wl_pointer, uint32_t time, uint32_t axis, wl_fixed_t value) {

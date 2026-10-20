@@ -516,9 +516,9 @@ extern "C" {
 
         CORE_KEYCODE_COUNT,                 // Number of Defined Keycodes
 
-        CORE_MOUSEB_LEFT,                   // MOUSE BUTTON `LEFT`
-        CORE_MOUSEB_MIDDLE,                 // MOUSE BUTTON `MIDDLE`
+        CORE_MOUSEB_LEFT             = 272, // MOUSE BUTTON `LEFT`
         CORE_MOUSEB_RIGHT,                  // MOUSE BUTTON `RIGHT`
+        CORE_MOUSEB_MIDDLE,                 // MOUSE BUTTON `MIDDLE`
         
     };
 
