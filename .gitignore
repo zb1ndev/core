@@ -1,5 +1,4 @@
-.directory
 .vscode
-build/int/*
-build/*.*
-build/examples/*
+.directory
+build/*
+deps/cglm/libcglm.a
