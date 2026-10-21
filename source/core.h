@@ -145,14 +145,14 @@ extern "C" {
                                                         const char* etype, 
                                                         const char* fmt, ...);
 
-    #define cdbg_log(msg)           _cdbg_eprint(__LINE__, __func__, "LOG", msg)
-    #define cdbg_logf(fmt, ...)     _cdbg_eprint(__LINE__, __func__, "LOG", fmt, __VA_ARGS__)
+    #define cdbg_log(msg)           _cdbg_eprint(__LINE__, __func__, "\033[90mLOG\033[0m", msg)
+    #define cdbg_logf(fmt, ...)     _cdbg_eprint(__LINE__, __func__, "\033[90mLOG\033[0m", fmt, __VA_ARGS__)
 
-    #define cdbg_warn(msg)          _cdbg_eprint(__LINE__, __func__, "WARNING", msg)
-    #define cdbg_warnf(fmt, ...)    _cdbg_eprint(__LINE__, __func__, "WARNING", fmt, __VA_ARGS__)
+    #define cdbg_warn(msg)          _cdbg_eprint(__LINE__, __func__, "\033[33mWARNING\033[0m", msg)
+    #define cdbg_warnf(fmt, ...)    _cdbg_eprint(__LINE__, __func__, "\033[33mWARNING\033[0m", fmt, __VA_ARGS__)
 
-    #define cdbg_err(msg)           _cdbg_eprint(__LINE__, __func__, "ERROR", msg)
-    #define cdbg_errf(fmt, ...)     _cdbg_eprint(__LINE__, __func__, "ERROR", fmt, __VA_ARGS__)
+    #define cdbg_err(msg)           _cdbg_eprint(__LINE__, __func__, "\033[91mERROR\033[0m", msg)
+    #define cdbg_errf(fmt, ...)     _cdbg_eprint(__LINE__, __func__, "\033[91mERROR\033[0m", fmt, __VA_ARGS__)
 
     typedef enum err_t err_t;
     enum err_t {

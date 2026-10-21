@@ -10,10 +10,12 @@ const char* vertex_shader_source = "#version 460 core\n"
 const char* fragment_shader_source = "#version 460 core\n"
     "out vec4 FragColor;\n"
     "void main(){\n"
-    "    FragColor = vec4(1.0f, 0.5f, 0.2f, 1.0f);\n"
+    "    FragColor = vec4(1.0f, 1.0f, 1.0f, 1.0f);\n"
     "}\0";
 
 int32_t main(int32_t argc, const char** argv) {
+
+    cdbg_log("Hello World!");
 
     err_t err = CORE_SUCCESS;
     cwindow_t window = cgraf_opengl_hook(&err, cwindow_create(NULL, "Hello World", (ivec2){1920, 1080}));

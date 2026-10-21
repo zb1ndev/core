@@ -59,7 +59,7 @@ cwindow_t cgraf_opengl_hook(err_t* err, cwindow_t handle) {
         local_persist const EGLint context_attributes[] = {
 
             EGL_CONTEXT_MAJOR_VERSION, 4,
-            EGL_CONTEXT_MINOR_VERSION, 4,
+            EGL_CONTEXT_MINOR_VERSION, 6,
             EGL_NONE
         
         };

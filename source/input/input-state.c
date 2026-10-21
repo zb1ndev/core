@@ -4,7 +4,6 @@ internal bool   key_states[CORE_KEYCODE_COUNT]  = {0};
 internal ivec2  mouse_position                  = {0};
 internal bool   mouse_button_states[3]          = {0}; // @note left | middle | right
 
-
 void cinput_get_mouse_position(err_t* err, ivec2* out) {
 
     if (out == NULL) {
