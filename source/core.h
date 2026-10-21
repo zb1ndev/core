@@ -234,6 +234,8 @@ extern "C" {
     #define CORE_CWINDOW_MINIMIZED                      (1<<3) // Enabled when window is minimized
     #define CORE_CWINDOW_RESIZED                        (1<<4) // Enabled when window is resized (not handled yet)
     #define CORE_CWINDOW_READY                          (1<<5) // Enabled when window is ready to be used.
+    #define CORE_CWINDOW_FOCUSED                        (1<<6) // Enabled when window is in focus.
+
 
     /*  Initializes a window and returns a handle to it.
         @param err An optional (can be `NULL`) reference to an error object the function can use to throw errors.

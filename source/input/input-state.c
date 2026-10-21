@@ -43,6 +43,13 @@ void cim_set_state(cinput_kc_t key_code, bool value) {
 
 }
 
+void cim_clear_state(void) {
+
+    (void)memset(key_states, false, sizeof(bool) * CORE_KEYCODE_COUNT);
+    (void)memset(mouse_button_states, false, sizeof(bool) * 3);
+
+}
+
 void cim_set_mouse_position(ivec2 value) { 
 
     mouse_position[0] = value[0]; 

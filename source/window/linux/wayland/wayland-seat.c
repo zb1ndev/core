@@ -4,15 +4,33 @@ internal struct wl_seat*        seat            = NULL;
 internal struct wl_keyboard*    keyboard        = NULL;
 internal struct wl_pointer*     pointer         = NULL;
 
-internal void keyboard_keymap(void* data, struct wl_keyboard* wl_keyboard, uint32_t format, int32_t fd, uint32_t size) {
-
-}
+internal void keyboard_keymap(void* data, struct wl_keyboard* wl_keyboard, uint32_t format, int32_t fd, uint32_t size) {}
 
 internal void keyboard_enter(void* data, struct wl_keyboard* wl_keyboard, uint32_t serial, struct wl_surface* surface, struct wl_array* keys) {
+
+    err_t err = CORE_SUCCESS;
+    cwindow_linux_t* window = NULL;
+    catch(&err, window = cwindow_get_by_surface(&err, surface), {
+        cdbg_warn("failed to get window by surface");
+        return;
+    });
+
+    window->state |= CORE_CWINDOW_FOCUSED;
 
 }
 
 internal void keyboard_leave(void* data, struct wl_keyboard* wl_keyboard, uint32_t serial, struct wl_surface* surface) {
+
+    err_t err = CORE_SUCCESS;
+    cwindow_linux_t* window = NULL;
+    catch(&err, window = cwindow_get_by_surface(&err, surface), {
+        cdbg_warn("failed to get window by surface");
+        return;
+    });
+
+    cim_clear_state();
+    window->state &= ~CORE_CWINDOW_FOCUSED;
+
 
 }
 
@@ -23,13 +41,8 @@ internal void keyboard_key(void* data, struct wl_keyboard* wl_keyboard, uint32_t
 
 }
 
-internal void keyboard_modifiers(void* data, struct wl_keyboard* wl_keyboard, uint32_t serial, uint32_t mods_depressed, uint32_t mods_latched, uint32_t mods_locked, uint32_t group) {
-
-}
-
-internal void keyboard_repeat_info(void* data, struct wl_keyboard* wl_keyboard, int32_t rate, int32_t delay) {
-
-}
+internal void keyboard_modifiers(void* data, struct wl_keyboard* wl_keyboard, uint32_t serial, uint32_t mods_depressed, uint32_t mods_latched, uint32_t mods_locked, uint32_t group) {}
+internal void keyboard_repeat_info(void* data, struct wl_keyboard* wl_keyboard, int32_t rate, int32_t delay) {}
 
 internal const struct wl_keyboard_listener keyboard_listener = {
     keyboard_keymap, keyboard_enter, keyboard_leave, keyboard_key, keyboard_modifiers, keyboard_repeat_info
@@ -45,49 +58,30 @@ internal void pointer_leave(void* data, struct wl_pointer* wl_pointer, uint32_t 
 
 internal void pointer_motion(void* data, struct wl_pointer* wl_pointer, uint32_t time, wl_fixed_t surface_x, wl_fixed_t surface_y) {
 
+    cim_set_mouse_position((ivec2){surface_x, surface_y});
+
 }
 
 internal void pointer_button(void* data, struct wl_pointer* wl_pointer, uint32_t serial, uint32_t time, uint32_t button, uint32_t state) {
 
     if (button <= CORE_MOUSEB_MIDDLE && button >= CORE_MOUSEB_LEFT)
         cim_set_state(button, state);
-    cdbg_logf("button: %u, state: %u", button, state);
+    cdbg_logf("button: %u, state: %u", button, state); // @todo plug in mouse and check other buttons, maybe make a seperate enum for mouse input
 
 }
 
-internal void pointer_axis(void* data, struct wl_pointer* wl_pointer, uint32_t time, uint32_t axis, wl_fixed_t value) {
-
-}
-
-internal void pointer_frame(void* data, struct wl_pointer* wl_pointer) {
-
-}
-
-internal void pointer_axis_source(void* data, struct wl_pointer* wl_pointer, uint32_t axis_source) {
-
-}
-
-internal void pointer_axis_stop(void* data, struct wl_pointer* wl_pointer, uint32_t time, uint32_t axis) {
-
-}
-
-internal void pointer_axis_discrete(void* data, struct wl_pointer* wl_pointer, uint32_t axis, int32_t discrete) {
-
-}
-
-internal void pointer_axis_value120(void* data, struct wl_pointer* wl_pointer, uint32_t axis, int32_t value120) {
-
-}
-
-internal void pointer_axis_relative_direction(void *data, struct wl_pointer *wl_pointer, uint32_t axis, uint32_t direction) {
-
-}
+internal void pointer_axis(void* data, struct wl_pointer* wl_pointer, uint32_t time, uint32_t axis, wl_fixed_t value) {}
+internal void pointer_frame(void* data, struct wl_pointer* wl_pointer) {}
+internal void pointer_axis_source(void* data, struct wl_pointer* wl_pointer, uint32_t axis_source) {}
+internal void pointer_axis_stop(void* data, struct wl_pointer* wl_pointer, uint32_t time, uint32_t axis) {}
+internal void pointer_axis_discrete(void* data, struct wl_pointer* wl_pointer, uint32_t axis, int32_t discrete) {}
+internal void pointer_axis_value120(void* data, struct wl_pointer* wl_pointer, uint32_t axis, int32_t value120) {}
+internal void pointer_axis_relative_direction(void *data, struct wl_pointer *wl_pointer, uint32_t axis, uint32_t direction) {}
 
 internal const struct wl_pointer_listener pointer_listener = {
     pointer_enter, pointer_leave, pointer_motion, pointer_button, pointer_axis, pointer_frame, pointer_axis_source, 
     pointer_axis_stop, pointer_axis_discrete, pointer_axis_value120, pointer_axis_relative_direction
 };
-
 
 internal void seat_capabilities(void* data, struct wl_seat* wl_seat, uint32_t capabilities) {
 

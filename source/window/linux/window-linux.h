@@ -58,6 +58,14 @@ struct cwindow_linux_t {
 */
 cwindow_linux_t*            cwindow_get                     (err_t* err, cwindow_t handle);
 
+/*  Gets the data ascociated with the provided handle.
+    @param err An optional (can be `NULL`) reference to an error object the function can use to throw errors.
+    @param surface The surface of the window you want the data of.
+    @returns A pointer to the window data.
+    @note Only accessible by internal translation units.
+*/
+cwindow_linux_t*            cwindow_get_by_surface          (err_t* err, struct wl_surface* surface);
+
 /*  Gets the wayland display managed internally.
     @returns A pointer to the wayland display object.
 */

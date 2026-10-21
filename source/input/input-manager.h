@@ -18,12 +18,20 @@ extern "C" {
 */
 void                 cim_set_state               (cinput_kc_t key_code, bool value);
 
+/*  Clears all keyboard and mouse input state ( excludes position ).
+    @returns N/A
+    @note This is an internal function for updating input via windowing callbacks.
+*/
+void                 cim_clear_state               (void);
+
 /*  Sets the internal mouse position data to `value`.
     @param value The value you want to set the mouse position to.
     @returns N/A
     @note This is an internal function for updating input via windowing callbacks.
 */
 void                 cim_set_mouse_position      (ivec2 value);
+
+
 
 #if defined(__cplusplus)
 }

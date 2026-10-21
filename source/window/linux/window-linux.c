@@ -18,6 +18,22 @@ cwindow_linux_t* cwindow_get(err_t* err, cwindow_t handle) {
 
 }
 
+cwindow_linux_t* cwindow_get_by_surface(err_t* err, struct wl_surface* surface) {
+
+    if (surface == NULL) { 
+        throw(err, CORE_PINVALID);
+        return NULL;
+    }
+
+    for (int w = 0; w < window_count; w++)
+        if (windows_data[w].surface == surface)
+            return &windows_data[w];
+
+    throw(err, CORE_WINNREADY);
+    return NULL;
+
+}
+
 // @note registry, display & compositor -> wayland-registry.c
 //       seat, keyboard & pointer       -> wayland-seat.c
 //       xdg_wm_base                    -> wayland-xdg.c
@@ -286,6 +302,17 @@ bool cwindow_get_closed(err_t* err, cwindow_t handle) {
     }
 
     return windows_data[handle].state & CORE_CWINDOW_CLOSED != 0;
+
+}
+
+bool cwindow_get_focused(err_t* err, cwindow_t handle) {
+
+    if (cwindow_is_valid(handle)) {
+        throw(err, CORE_WINNREADY);
+        return false;
+    }
+
+    return windows_data[handle].state & CORE_CWINDOW_FOCUSED != 0;
 
 }
 
