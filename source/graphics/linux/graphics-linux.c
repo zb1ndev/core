@@ -13,7 +13,7 @@ internal EGLContext     egl_shared_context;
 cwindow_t cgraf_opengl_hook(err_t* err, cwindow_t handle) {
 
     cwindow_linux_t* window = NULL;
-    catch(err, window = cwindow_get(err, handle), 
+    ccatch(err, window = cwindow_get(err, handle), 
         return CORE_CWINDOW_INVALID;
     );
 
@@ -21,17 +21,17 @@ cwindow_t cgraf_opengl_hook(err_t* err, cwindow_t handle) {
 
         egl_display = eglGetDisplay((EGLNativeDisplayType)cwindow_get_display());
         if (egl_display == EGL_NO_DISPLAY) {
-            throw(err, CORE_EGLNODISP);
+            cthrow(err, CORE_EGLNODISP);
             return CORE_CWINDOW_INVALID;
         }
 
         if (eglInitialize(egl_display, NULL, NULL) == EGL_FALSE) {
-            throw(err, CORE_EGLINIT);
+            cthrow(err, CORE_EGLINIT);
             return CORE_CWINDOW_INVALID;
         }
 
         if (eglBindAPI(EGL_OPENGL_API) == EGL_FALSE) {
-            throw(err, CORE_EGLBIND);
+            cthrow(err, CORE_EGLBIND);
             return CORE_CWINDOW_INVALID;
         }
         
@@ -52,7 +52,7 @@ cwindow_t cgraf_opengl_hook(err_t* err, cwindow_t handle) {
         if (eglChooseConfig(egl_display, attributes, &egl_config, 1, &config_count) == EGL_FALSE
             || config_count == 0
         ) {
-            throw(err, CORE_EGLCONFIG);
+            cthrow(err, CORE_EGLCONFIG);
             return CORE_CWINDOW_INVALID;
         }
 
@@ -66,17 +66,17 @@ cwindow_t cgraf_opengl_hook(err_t* err, cwindow_t handle) {
 
         egl_shared_context = eglCreateContext(egl_display, egl_config, EGL_NO_CONTEXT, context_attributes);
         if (egl_shared_context == EGL_NO_CONTEXT) {
-            throw(err, CORE_EGLCONTEXT);
+            cthrow(err, CORE_EGLCONTEXT);
             return CORE_CWINDOW_INVALID;
         }
 
         if (eglMakeCurrent(egl_display, EGL_NO_SURFACE, EGL_NO_SURFACE, egl_shared_context) == EGL_FALSE) {
-            throw(err, CORE_EGLMAKCUR);
+            cthrow(err, CORE_EGLMAKCUR);
             return CORE_CWINDOW_INVALID;
         }
 
         if (gladLoadGLLoader((GLADloadproc)eglGetProcAddress) == EGL_FALSE) {
-            throw(err, CORE_GLADLOAD);
+            cthrow(err, CORE_GLADLOAD);
             return CORE_CWINDOW_INVALID;
         }
 
@@ -87,7 +87,7 @@ cwindow_t cgraf_opengl_hook(err_t* err, cwindow_t handle) {
     window->cgraf_cleanup = cgraf_opengl_cleanup;
     gl_windows[handle].egl_window = wl_egl_window_create(window->surface, window->size[0], window->size[1]);
     if (gl_windows[handle].egl_window == NULL) {
-        throw(err, CORE_EGLCREATWIN);
+        cthrow(err, CORE_EGLCREATWIN);
         return CORE_CWINDOW_INVALID;
     }
 
@@ -95,7 +95,7 @@ cwindow_t cgraf_opengl_hook(err_t* err, cwindow_t handle) {
     if (gl_windows[handle].egl_surface == EGL_NO_SURFACE) {
         wl_egl_window_destroy(gl_windows[handle].egl_window);
         gl_windows[handle].egl_window = NULL;
-        throw(err, CORE_EGLCREATSURF);
+        cthrow(err, CORE_EGLCREATSURF);
         return CORE_CWINDOW_INVALID;
     }
 
@@ -108,7 +108,7 @@ cwindow_t cgraf_opengl_hook(err_t* err, cwindow_t handle) {
 void cgraf_opengl_cleanup(err_t* err, cwindow_t handle) {
 
     cwindow_linux_t* window = NULL;
-    catch(err, window = cwindow_get(err, handle), 
+    ccatch(err, window = cwindow_get(err, handle), 
         return;
     );
 
@@ -143,7 +143,7 @@ void cgraf_vulkan_cleanup(err_t* err, cwindow_t handle) {
 void cgraf_draw_start(err_t* err, cwindow_t handle) {
 
     cwindow_linux_t* window = NULL;
-    catch(err, window = cwindow_get(err, handle), 
+    ccatch(err, window = cwindow_get(err, handle), 
         return;
     );
 
@@ -161,7 +161,7 @@ void cgraf_draw_start(err_t* err, cwindow_t handle) {
 void cgraf_draw_end(err_t* err, cwindow_t handle) {
 
     cwindow_linux_t* window = NULL;
-    catch(err, window = cwindow_get(err, handle), 
+    ccatch(err, window = cwindow_get(err, handle), 
         return;
     );
 
@@ -177,7 +177,7 @@ void cgraf_draw_end(err_t* err, cwindow_t handle) {
 void cgraf_handle_resize(err_t* err, cwindow_t handle) {
 
     cwindow_linux_t* window = NULL;
-    catch(err, window = cwindow_get(err, handle), 
+    ccatch(err, window = cwindow_get(err, handle), 
         return;
     );
 
@@ -185,7 +185,7 @@ void cgraf_handle_resize(err_t* err, cwindow_t handle) {
     if (gl_windows[handle].initialized == true) {
 
         cwindow_linux_t* window = NULL;
-        catch(err, window = cwindow_get(err, handle), 
+        ccatch(err, window = cwindow_get(err, handle), 
             return;
         );
 

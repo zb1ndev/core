@@ -10,7 +10,7 @@ internal bool               window_manager_initialized      = false;
 cwindow_linux_t* cwindow_get(err_t* err, cwindow_t handle) {
     
     if (cwindow_is_valid(handle)) {
-        throw(err, CORE_WINNREADY);
+        cthrow(err, CORE_WINNREADY);
         return NULL;
     }
 
@@ -21,7 +21,7 @@ cwindow_linux_t* cwindow_get(err_t* err, cwindow_t handle) {
 cwindow_linux_t* cwindow_get_by_surface(err_t* err, struct wl_surface* surface) {
 
     if (surface == NULL) { 
-        throw(err, CORE_PINVALID);
+        cthrow(err, CORE_PINVALID);
         return NULL;
     }
 
@@ -29,7 +29,7 @@ cwindow_linux_t* cwindow_get_by_surface(err_t* err, struct wl_surface* surface) 
         if (windows_data[w].surface == surface)
             return &windows_data[w];
 
-    throw(err, CORE_WINNREADY);
+    cthrow(err, CORE_WINNREADY);
     return NULL;
 
 }
@@ -48,17 +48,17 @@ cwindow_t cwindow_create(err_t* err, const char* title, ivec2 size) {
             free_windows[w] = (CORE_CWINDOW_MAX - 1) - w;
 
         if ((display = wl_display_connect(NULL)) == NULL) {
-            throw(err, CORE_DISPCONREF);
+            cthrow(err, CORE_DISPCONREF);
             return CORE_CWINDOW_INVALID;
         }
 
         if ((registry = wl_display_get_registry(display)) == NULL) {
-            throw(err, CORE_DIPREG);
+            cthrow(err, CORE_DIPREG);
             return CORE_CWINDOW_INVALID;
         }
 
         if (wl_registry_add_listener(registry, &registry_listener, NULL) < 0) {
-            throw(err, CORE_REGADDLIS);
+            cthrow(err, CORE_REGADDLIS);
             return CORE_CWINDOW_INVALID;
         }
 
@@ -66,7 +66,7 @@ cwindow_t cwindow_create(err_t* err, const char* title, ivec2 size) {
         wl_display_roundtrip(display);
 
         if (compositor == NULL || xdg_wm_base == NULL) {
-            throw(err, CORE_PINVALID);
+            cthrow(err, CORE_PINVALID);
             return CORE_CWINDOW_INVALID;
         }
 
@@ -75,7 +75,7 @@ cwindow_t cwindow_create(err_t* err, const char* title, ivec2 size) {
     }
    
     if (window_count >= CORE_CWINDOW_MAX) {
-        throw(err, CORE_WINMAXC);
+        cthrow(err, CORE_WINMAXC);
         return CORE_CWINDOW_INVALID;
     }
 
@@ -91,21 +91,21 @@ cwindow_t cwindow_create(err_t* err, const char* title, ivec2 size) {
     
     window->surface = wl_compositor_create_surface(compositor);
     if (window->surface == NULL) {
-        throw(err, CORE_CREASURF);
+        cthrow(err, CORE_CREASURF);
         return CORE_CWINDOW_INVALID;
     }
 
     window->xdg_surface = xdg_wm_base_get_xdg_surface(xdg_wm_base, window->surface);
     if (window->xdg_surface == NULL) {
         wl_surface_destroy(window->surface);
-        throw(err, CORE_XDGGETSURF);
+        cthrow(err, CORE_XDGGETSURF);
         return CORE_CWINDOW_INVALID;
     }
 
     if (xdg_surface_add_listener(window->xdg_surface, &xdg_surface_listener, window) < 0) {
         xdg_surface_destroy(window->xdg_surface);
         wl_surface_destroy(window->surface);
-        throw(err, CORE_XDGSADDLIS);
+        cthrow(err, CORE_XDGSADDLIS);
         return CORE_CWINDOW_INVALID;
     }
  
@@ -113,7 +113,7 @@ cwindow_t cwindow_create(err_t* err, const char* title, ivec2 size) {
     if (window->xdg_surface == NULL) {
         xdg_surface_destroy(window->xdg_surface);
         wl_surface_destroy(window->surface);
-        throw(err, CORE_XDGGETTL);
+        cthrow(err, CORE_XDGGETTL);
         return CORE_CWINDOW_INVALID;
     }
 
@@ -121,7 +121,7 @@ cwindow_t cwindow_create(err_t* err, const char* title, ivec2 size) {
         xdg_toplevel_destroy(window->toplevel);
         xdg_surface_destroy(window->xdg_surface);
         wl_surface_destroy(window->surface);
-        throw(err, CORE_XDGTLADDLIS);
+        cthrow(err, CORE_XDGTLADDLIS);
         return CORE_CWINDOW_INVALID;
     }
     
@@ -132,7 +132,7 @@ cwindow_t cwindow_create(err_t* err, const char* title, ivec2 size) {
         xdg_toplevel_destroy(window->toplevel);
         xdg_surface_destroy(window->xdg_surface);
         wl_surface_destroy(window->surface);
-        throw(err, CORE_DISPRT);
+        cthrow(err, CORE_DISPRT);
         return CORE_CWINDOW_INVALID;
     }
 
@@ -143,14 +143,14 @@ cwindow_t cwindow_create(err_t* err, const char* title, ivec2 size) {
 void cwindow_destroy(err_t* err, cwindow_t handle) {
 
     if (cwindow_is_valid(handle)) {
-        throw(err, CORE_WINNREADY);
+        cthrow(err, CORE_WINNREADY);
         return;
     }
 
     cwindow_linux_t* window = &windows_data[handle];
     if (window->cgraf_cleanup != NULL)  {
-        catch(err, window->cgraf_cleanup(err, handle),
-            throw(err, *err);    
+        ccatch(err, window->cgraf_cleanup(err, handle),
+            cthrow(err, *err);    
         );
     }
 
@@ -167,8 +167,8 @@ void cwindow_destroy(err_t* err, cwindow_t handle) {
  
     if (--window_count <= 0) {
         
-        catch(err, cgraf_deinitialize(err), 
-            throw(err, *err);
+        ccatch(err, cgraf_deinitialize(err), 
+            cthrow(err, *err);
         );
 
         if (keyboard != NULL) {
@@ -210,7 +210,7 @@ void cwindow_destroy(err_t* err, cwindow_t handle) {
 void cwindow_update(err_t* err) {
 
     if (wl_display_dispatch_pending(cwindow_get_display()) < 0) {
-        throw(err, CORE_DISPDISPAT);
+        cthrow(err, CORE_DISPDISPAT);
         return;
     }
 
@@ -219,12 +219,12 @@ void cwindow_update(err_t* err) {
 void cwindow_get_size(err_t* err, cwindow_t handle, ivec2* out) {
 
     if (cwindow_is_valid(handle)) {
-        throw(err, CORE_WINNREADY);
+        cthrow(err, CORE_WINNREADY);
         return;
     }
 
     if (out == NULL) {
-        throw(err, CORE_PINVALID);
+        cthrow(err, CORE_PINVALID);
         return;
     }    
 
@@ -236,12 +236,12 @@ void cwindow_get_size(err_t* err, cwindow_t handle, ivec2* out) {
 void cwindow_get_sizef(err_t* err, cwindow_t handle, vec2* out) {
 
     if (cwindow_is_valid(handle)) {
-        throw(err, CORE_WINNREADY);
+        cthrow(err, CORE_WINNREADY);
         return;
     }
 
     if (out == NULL) {
-        throw(err, CORE_PINVALID);
+        cthrow(err, CORE_PINVALID);
         return;
     }    
 
@@ -253,7 +253,7 @@ void cwindow_get_sizef(err_t* err, cwindow_t handle, vec2* out) {
 const char* cwindow_get_title(err_t* err, cwindow_t handle) {
 
     if (cwindow_is_valid(handle)) {
-        throw(err, CORE_WINNREADY);
+        cthrow(err, CORE_WINNREADY);
         return NULL;
     }
 
@@ -264,7 +264,7 @@ const char* cwindow_get_title(err_t* err, cwindow_t handle) {
 bool cwindow_get_fullscreen(err_t* err, cwindow_t handle) {
 
     if (cwindow_is_valid(handle)) {
-        throw(err, CORE_WINNREADY);
+        cthrow(err, CORE_WINNREADY);
         return false;
     }
 
@@ -275,7 +275,7 @@ bool cwindow_get_fullscreen(err_t* err, cwindow_t handle) {
 bool cwindow_get_minimized(err_t* err, cwindow_t handle) {
 
     if (cwindow_is_valid(handle)) {
-        throw(err, CORE_WINNREADY);
+        cthrow(err, CORE_WINNREADY);
         return false;
     }
 
@@ -286,7 +286,7 @@ bool cwindow_get_minimized(err_t* err, cwindow_t handle) {
 bool cwindow_get_resized(err_t* err, cwindow_t handle) {
 
     if (cwindow_is_valid(handle)) {
-        throw(err, CORE_WINNREADY);
+        cthrow(err, CORE_WINNREADY);
         return false;
     }
 
@@ -297,7 +297,7 @@ bool cwindow_get_resized(err_t* err, cwindow_t handle) {
 bool cwindow_get_closed(err_t* err, cwindow_t handle) {
 
     if (cwindow_is_valid(handle)) {
-        throw(err, CORE_WINNREADY);
+        cthrow(err, CORE_WINNREADY);
         return false;
     }
 
@@ -308,7 +308,7 @@ bool cwindow_get_closed(err_t* err, cwindow_t handle) {
 bool cwindow_get_focused(err_t* err, cwindow_t handle) {
 
     if (cwindow_is_valid(handle)) {
-        throw(err, CORE_WINNREADY);
+        cthrow(err, CORE_WINNREADY);
         return false;
     }
 
@@ -319,7 +319,7 @@ bool cwindow_get_focused(err_t* err, cwindow_t handle) {
 void cwindow_set_size(err_t* err, cwindow_t handle, ivec2 value) {
 
     if (cwindow_is_valid(handle)) {
-        throw(err, CORE_WINNREADY);
+        cthrow(err, CORE_WINNREADY);
         return;
     }
 
@@ -335,12 +335,12 @@ void cwindow_set_size(err_t* err, cwindow_t handle, ivec2 value) {
 void cwindow_set_title(err_t* err, cwindow_t handle, const char* value) {
 
     if (cwindow_is_valid(handle)) {
-        throw(err, CORE_WINNREADY);
+        cthrow(err, CORE_WINNREADY);
         return;
     }
 
     if (value == NULL) {
-        throw(err, CORE_PINVALID);
+        cthrow(err, CORE_PINVALID);
         return;
     }    
 
@@ -352,12 +352,12 @@ void cwindow_set_title(err_t* err, cwindow_t handle, const char* value) {
 void cwindow_set_icon(err_t* err, cwindow_t handle, uint8_t* data, uint64_t data_size) {
 
     if (cwindow_is_valid(handle)) {
-        throw(err, CORE_WINNREADY);
+        cthrow(err, CORE_WINNREADY);
         return;
     }
 
     if (data == NULL || data_size == 0) {
-        throw(err, CORE_PINVALID);
+        cthrow(err, CORE_PINVALID);
         return;
     }    
 
@@ -368,7 +368,7 @@ void cwindow_set_icon(err_t* err, cwindow_t handle, uint8_t* data, uint64_t data
 void cwindow_set_fullscreen(err_t* err, cwindow_t handle, bool value) {
 
     if (cwindow_is_valid(handle)) {
-        throw(err, CORE_WINNREADY);
+        cthrow(err, CORE_WINNREADY);
         return;
     }
 
@@ -382,7 +382,7 @@ void cwindow_set_fullscreen(err_t* err, cwindow_t handle, bool value) {
 void cwindow_set_minimized(err_t* err, cwindow_t handle, bool value) {
     
     if (cwindow_is_valid(handle)) {
-        throw(err, CORE_WINNREADY);
+        cthrow(err, CORE_WINNREADY);
         return;
     }
 
@@ -395,7 +395,7 @@ void cwindow_set_minimized(err_t* err, cwindow_t handle, bool value) {
 void cwindow_set_resized(err_t* err, cwindow_t handle, bool value) {
 
     if (cwindow_is_valid(handle)) {
-        throw(err, CORE_WINNREADY);
+        cthrow(err, CORE_WINNREADY);
         return;
     }
 
@@ -408,7 +408,7 @@ void cwindow_set_resized(err_t* err, cwindow_t handle, bool value) {
 void cwindow_close(err_t* err, cwindow_t handle) {
 
     if (cwindow_is_valid(handle)) {
-        throw(err, CORE_WINNREADY);
+        cthrow(err, CORE_WINNREADY);
         return;
     }
 

@@ -11,13 +11,13 @@ The following code opens a window, initializes OpenGL, and binds it to the windo
 err_t err = CORE_SUCCESS;
 cwindow_t window = cwindow_create(&err, "Hello World", (ivec2){1920, 1080}); 
 if (window == CORE_CWINDOW_INVALID) {
-    throw(&err, CORE_WINNREADY);
+    cthrow(&err, CORE_WINNREADY);
     return 1;
 }
-catch(&err, cgraf_opengl_hook(&err, window), return 1; );
+ccatch(&err, cgraf_opengl_hook(&err, window), return 1; );
 ```
 
-core provides the error handling macros `throw` and `catch` to make the use of the optional error system easier. Next is the event loop, as you can see `NULL` has been passed to the error parameter meaning that we are choosing not to handle errors right now ...
+core provides the error handling macros `cthrow` and `ccatch` to make the use of the optional error system easier. Next is the event loop, as you can see `NULL` has been passed to the error parameter meaning that we are choosing not to handle errors right now ...
 
 ```c
 while (!cwindow_get_closed(NULL, window)) {

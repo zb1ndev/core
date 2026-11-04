@@ -7,7 +7,7 @@ internal bool   mouse_button_states[3]          = {0}; // @note left | middle | 
 void cinput_get_mouse_position(err_t* err, ivec2* out) {
 
     if (out == NULL) {
-        throw(err, CORE_PINVALID);
+        cthrow(err, CORE_PINVALID);
         return;
     }
 
@@ -23,7 +23,7 @@ bool cinput_get_button(err_t* err, cinput_kc_t key_code) {
     }
 
     if (key_code > CORE_KEYCODE_COUNT || key_code < 0) {
-        throw(err, CORE_PINVALID);
+        cthrow(err, CORE_PINVALID);
         return false;
     }
 

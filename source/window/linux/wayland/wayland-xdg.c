@@ -17,8 +17,8 @@ internal void toplevel_configure(void* data, struct xdg_toplevel* tl, int32_t wi
         window->size[1] = height;
         window->state |= CORE_CWINDOW_RESIZED;
 
-        catch(&err, cgraf_handle_resize(&err, window->handle),
-            throw(&err, err);
+        ccatch(&err, cgraf_handle_resize(&err, window->handle),
+            cthrow(&err, err);
         );
         
     }

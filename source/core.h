@@ -204,7 +204,7 @@ extern "C" {
         @param err The error object you are putting `msg` into.
         @param msg The error code you are throwing.
     */
-    #define throw(err, msg)             do{if((err)!=NULL){*(err)=(msg);cdbg_err(_cdbg_get_errmsg(*err));}}while(0)
+    #define cthrow(err, msg)            do{if((err)!=NULL){*(err)=(msg);cdbg_err(_cdbg_get_errmsg(*err));}}while(0)
 
     /*  Performs `call` and checks if `err` of type `err_t*` is not `NULL` and that the value at `err` is not equal to `CORE_SUCCESS`.
         If so, run the code defined in except.
@@ -212,7 +212,7 @@ extern "C" {
         @param call The procedure you expect to fail.
         @param except The code you want to run on failure.
     */
-    #define catch(err, call, except)    do{call;if(err!=NULL&&*err!=CORE_SUCCESS)except}while(0)
+    #define ccatch(err, call, except)   do{call;if(err!=NULL&&*err!=CORE_SUCCESS)except}while(0)
 
 #pragma endregion // CORE_DEBUGGING
 

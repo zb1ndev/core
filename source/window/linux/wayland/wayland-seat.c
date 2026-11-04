@@ -10,7 +10,7 @@ internal void keyboard_enter(void* data, struct wl_keyboard* wl_keyboard, uint32
 
     err_t err = CORE_SUCCESS;
     cwindow_linux_t* window = NULL;
-    catch(&err, window = cwindow_get_by_surface(&err, surface), {
+    ccatch(&err, window = cwindow_get_by_surface(&err, surface), {
         cdbg_warn("failed to get window by surface");
         return;
     });
@@ -23,7 +23,7 @@ internal void keyboard_leave(void* data, struct wl_keyboard* wl_keyboard, uint32
 
     err_t err = CORE_SUCCESS;
     cwindow_linux_t* window = NULL;
-    catch(&err, window = cwindow_get_by_surface(&err, surface), {
+    ccatch(&err, window = cwindow_get_by_surface(&err, surface), {
         cdbg_warn("failed to get window by surface");
         return;
     });
