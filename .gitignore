@@ -2,3 +2,4 @@
 .directory
 build/*
 deps/cglm/libcglm.a
+bash-consts.sh
