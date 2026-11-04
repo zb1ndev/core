@@ -80,30 +80,30 @@ int32_t main(int32_t argc, const char** argv) {
 
     uint32_t vao;
     glGenVertexArrays(1, &vao);  
-
+        
     glBindVertexArray(vao);
     glBindBuffer(GL_ARRAY_BUFFER, vbo);
     glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
     glEnableVertexAttribArray(0); 
 
-    while(cwindow_get_closed(NULL, window) == false) {
+    while (!cwindow_get_closed(NULL, window)) {
 
         if (cinput_get_button(NULL, CORE_KEYCODE_ESC))
             cwindow_close(NULL, window);
-
         cwindow_update(NULL);
+
         cgraf_draw_start(NULL, window);
 
-        float brightness = cinput_get_button(NULL, CORE_MOUSEB_LEFT) ? 0.5f : 0.1f;
+            float brightness = cinput_get_button(NULL, CORE_MOUSEB_LEFT) ? 0.5f : 0.1f;
 
-        glViewport(0, 0, window_size[0], window_size[1]);
-        glClearColor(brightness, brightness, brightness, 1.0f);
-        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+            glViewport(0, 0, window_size[0], window_size[1]);
+            glClearColor(brightness, brightness, brightness, 1.0f);
+            glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-        glUseProgram(shader_program);
-        glBindVertexArray(vao);
-        glDrawArrays(GL_TRIANGLES, 0, 3);
+            glUseProgram(shader_program);
+            glBindVertexArray(vao);
+            glDrawArrays(GL_TRIANGLES, 0, 3);
 
         cgraf_draw_end(NULL, window);
 

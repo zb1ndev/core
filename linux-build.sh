@@ -25,5 +25,8 @@ done
 
 ar rcs ./build/libcore.a "${object_files[@]}"
 
-gcc -o ./build/examples/01-test ./examples/01-hello-world/main.c -L./build $includes -lcore $linkages
-./build/examples/01-test
+# gcc -o ./build/examples/01-main ./examples/01-hello-world-ogl/main.c -L./build $includes -lcore $linkages
+# ./build/examples/01-main
+
+gcc -o ./build/examples/02-main ./examples/02-simple-renderer-ogl/main.c -L./build $includes -lcore $linkages
+./build/examples/02-main

@@ -48,14 +48,25 @@ extern "C" {
 
 */
 
-#define internal                                    static
+#if !defined(internal)
+    #define internal                                static
+#endif // internal
+
+#if !defined(local_persist)
 #define local_persist                               static
+#endif // local_persist
 
 #include <stdio.h>
 #include <stdint.h>
 #include <string.h>
 #include <stdarg.h>
 #include <stdbool.h>
+
+#define KB                                          (1024U)
+#define MB                                          (kb * 1024U)
+#define GB                                          (mb * 1024U)
+
+#define ALIGN(ptr, aln)                             (((uintptr_t)(ptr) + ((aln) - 1)) & ~((aln) - 1))
 
 #if defined(__x86_64__) || defined(_M_X64)
     #define CORE_ARCH_AMD64                         (1U)
