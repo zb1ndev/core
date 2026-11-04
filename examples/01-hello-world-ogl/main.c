@@ -18,11 +18,12 @@ int32_t main(int32_t argc, const char** argv) {
     cdbg_log("Hello World!");
 
     err_t err = CORE_SUCCESS;
-    cwindow_t window = cgraf_opengl_hook(&err, cwindow_create(NULL, "Hello World", (ivec2){1920, 1080}));
+    cwindow_t window = cwindow_create(&err, "Hello World", (ivec2){1920, 1080}); 
     if (window == CORE_CWINDOW_INVALID) {
         throw(&err, CORE_WINNREADY);
         return 1;
     }
+    catch(&err, cgraf_opengl_hook(&err, window), return 1; );
 
     ivec2 window_size = {0};
     cwindow_get_size(NULL, window, &window_size);

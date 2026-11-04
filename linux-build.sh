@@ -13,13 +13,14 @@ source_files=(
 
 includes="-L./deps/cglm -I./deps/ -I./source/"
 linkages="-lwayland-client -lwayland-cursor -lwayland-egl -lGL -lEGL -lGLESv2 -lrt -lcglm"
+cflags=""
 compiler="gcc"
 
 for file in "${source_files[@]}"; do
     filename="${file##*/}"
     base_name="${filename%.c}"
     obj_path="./build/int/${base_name}.o"
-    $compiler -c "$file" -o "$obj_path" $includes
+    $compiler -c "$file" -o "$obj_path" $cflags $includes
     object_files+=("$obj_path")
 done
 
