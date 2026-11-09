@@ -63,8 +63,8 @@ extern "C" {
 #include <stdbool.h>
 
 #define KB                                          (1024U)
-#define MB                                          (kb * 1024U)
-#define GB                                          (mb * 1024U)
+#define MB                                          (KB * 1024U)
+#define GB                                          (MB * 1024U)
 
 #define ALIGN(ptr, aln)                             (((uintptr_t)(ptr) + ((aln) - 1)) & ~((aln) - 1))
 
