@@ -2,4 +2,5 @@
 .directory
 build/*
 deps/cglm/libcglm.a
+deps/wayland/
 bash-consts.sh

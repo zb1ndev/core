@@ -1,6 +1,33 @@
 #!/bin/bash
 source "${BASH_SOURCE%/*}/bash-consts.sh"
 
+# @note Locate dependencies
+scanner="wayland-scanner"
+protocol_dir="$(pkg-config --variable=pkgdatadir wayland-protocols)"
+protocol_out="deps/wayland"
+
+mkdir -p "$protocol_out"
+
+# @note generate protocol files
+generate_protocol() {
+
+    local name="$1"
+    local xml="$2"
+
+    "$scanner" client-header "$xml" \
+        "$protocol_out/$name-client-protocol.h"
+    "$scanner" private-code "$xml" \
+        "$protocol_out/$name-protocol.c"
+    echo "generated $name"
+
+}
+
+generate_protocol "xdg-shell" "$protocol_dir/stable/xdg-shell/xdg-shell.xml"
+generate_protocol "pointer-constraints-unstable-v1" "$protocol_dir/unstable/pointer-constraints/pointer-constraints-unstable-v1.xml"
+generate_protocol "relative-pointer-unstable-v1" "$protocol_dir/unstable/relative-pointer/relative-pointer-unstable-v1.xml"
+
+echo "wayland protocol generation complete"
+
 mkdir -p ./build/int ./build/examples
 rm -f ./build/int/*.o ./build/libcore.a
 
@@ -12,6 +39,8 @@ source_files=(
     "./deps/wayland/xdg-shell-protocol.c"
     "./source/window/linux/window-linux.c"
     "./source/graphics/linux/graphics-linux.c"
+    "./deps/wayland/relative-pointer-unstable-v1-protocol.c"
+    "./deps/wayland/pointer-constraints-unstable-v1-protocol.c"
 )
 
 includes="-L./deps/cglm -I./deps/ -I./source/ -I./examples/02-simple-renderer-ogl -I./examples/02-simple-renderer-ogl/deps"
@@ -32,5 +61,5 @@ ar rcs ./build/libcore.a "${object_files[@]}"
 # gcc -o ./build/examples/01-main ./examples/01-hello-world-ogl/main.c -L./build $includes -lcore $linkages
 # ./build/examples/01-main
 
-gcc -o ./build/examples/02-main ./examples/02-simple-renderer-ogl/main.c -L./build  $includes -lcore $linkages
-./build/examples/02-main $obj_file $mtl_file $normal_file
+# gcc -o ./build/examples/02-main ./examples/02-simple-renderer-ogl/main.c -L./build  $includes -lcore $linkages
+# ./build/examples/02-main $obj_file $mtl_file $normal_file

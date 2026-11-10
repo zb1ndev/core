@@ -131,6 +131,7 @@ extern "C" {
     #include <EGL/egl.h>
     #include <wayland-egl.h>
     #include <wayland-client.h>
+
     #include <wayland/xdg-shell-client-protocol.h>
 
 #endif // CORE_PLATFORM_LINUX
@@ -246,7 +247,7 @@ extern "C" {
     #define CORE_CWINDOW_RESIZED                        (1<<4) // Enabled when window is resized (not handled yet)
     #define CORE_CWINDOW_READY                          (1<<5) // Enabled when window is ready to be used.
     #define CORE_CWINDOW_FOCUSED                        (1<<6) // Enabled when window is in focus.
-
+    #define CORE_CWINDOW_MOUSE_ENTERED                  (1<<7) // Enabled when the mouse is within the window bounds
 
     /*  Initializes a window and returns a handle to it.
         @param err An optional (can be `NULL`) reference to an error object the function can use to throw errors.
@@ -327,6 +328,13 @@ extern "C" {
     */
     bool                    cwindow_get_focused         (err_t* err, cwindow_t handle);
 
+    /*  Gets whether the window ascociated with the provided `handle` has the mouse entered flag enabled.
+        @param err An optional (can be `NULL`) reference to an error object the function can use to throw errors.
+        @param handle The window you want to get the mouse entered flag of.
+        @returns Whether the mouse entered flag is enabled.
+    */
+    bool                    cwindow_get_mouse_entered   (err_t* err, cwindow_t handle);
+
     /*  Sets the size of the window ascociated with the provided `handle`.
         @param err An optional (can be `NULL`) reference to an error object the function can use to throw errors.
         @param handle The window you want to set the size of.
@@ -380,6 +388,15 @@ extern "C" {
     */
     void                    cwindow_set_resized         (err_t* err, cwindow_t handle, bool value);
 
+    /*  Sets the resized flag of the window ascociated with the provided `handle`.
+        @param err An optional (can be `NULL`) reference to an error object the function can use to throw errors.
+        @param handle The window you want to set the resized flag of.
+        @param value Whether the flag should be enabled or disabled.
+        @returns N/A.
+        @note Sets the `CORE_CWINDOW_RESIZED` flag.
+    */
+    void                    cwindow_set_cursor          (err_t* err, cwindow_t handle, /* @todo add cursor type parameter */ bool hidden, bool locked);
+        
     /*  Sets the closed flag of the window ascociated with the provided `handle`.
         @param err An optional (can be `NULL`) reference to an error object the function can use to throw errors.
         @param handle The window you want to set the closed flag of.
@@ -541,6 +558,13 @@ extern "C" {
         @returns N/A.
     */
     void                    cinput_get_mouse_position   (err_t* err, ivec2* out);
+
+    /*  Gets the change in mouse position relative to the current focused window.
+        @param err An optional (can be `NULL`) reference to an error object the function can use to throw errors.
+        @param out A pointer to the location you want the movement to be copied.
+        @returns N/A.
+    */
+    void                    cinput_get_mouse_axis       (err_t* err, ivec2* out);
 
     /*  Gets the whether the provided keycode is pressed relative to the current focused window.
         @param err An optional (can be `NULL`) reference to an error object the function can use to throw errors.

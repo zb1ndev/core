@@ -50,9 +50,27 @@ internal const struct wl_keyboard_listener keyboard_listener = {
 
 internal void pointer_enter(void* data, struct wl_pointer* wl_pointer, uint32_t serial, struct wl_surface* surface, wl_fixed_t surface_x, wl_fixed_t surface_y) {
 
+    err_t err = CORE_SUCCESS;
+    cwindow_linux_t* window = NULL;
+    ccatch(&err, window = cwindow_get_by_surface(&err, surface), {
+        cdbg_warn("failed to get window by surface");
+        return;
+    });
+
+    window->state |= CORE_CWINDOW_MOUSE_ENTERED;
+
 }
 
 internal void pointer_leave(void* data, struct wl_pointer* wl_pointer, uint32_t serial, struct wl_surface* surface) {
+
+    err_t err = CORE_SUCCESS;
+    cwindow_linux_t* window = NULL;
+    ccatch(&err, window = cwindow_get_by_surface(&err, surface), {
+        cdbg_warn("failed to get window by surface");
+        return;
+    });
+
+    window->state &= ~CORE_CWINDOW_MOUSE_ENTERED;
 
 }
 

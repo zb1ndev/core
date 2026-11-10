@@ -5,6 +5,9 @@ internal struct wl_registry*    registry        = NULL;
 internal struct wl_display*     display         = NULL;
 internal struct wl_compositor*  compositor      = NULL;
 
+// internal struct wp_locked_pointer_v1*    locked_pointer;
+// internal struct wp_relative_pointer_v1*  relative_pointer;
+
 internal void reg_global(void* data, struct wl_registry* registry, uint32_t name, const char* iface, uint32_t version) {
     
     // @note make sure the version provided is valid

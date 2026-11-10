@@ -316,6 +316,17 @@ bool cwindow_get_focused(err_t* err, cwindow_t handle) {
 
 }
 
+bool cwindow_get_mouse_entered(err_t* err, cwindow_t handle) {
+
+    if (cwindow_is_valid(handle)) {
+        cthrow(err, CORE_WINNREADY);
+        return false;
+    }
+
+    return windows_data[handle].state & CORE_CWINDOW_MOUSE_ENTERED != 0;
+
+}
+
 void cwindow_set_size(err_t* err, cwindow_t handle, ivec2 value) {
 
     if (cwindow_is_valid(handle)) {
@@ -402,6 +413,18 @@ void cwindow_set_resized(err_t* err, cwindow_t handle, bool value) {
     windows_data[handle].state = value 
         ? windows_data[handle].state | CORE_CWINDOW_RESIZED
         : windows_data[handle].state & ~CORE_CWINDOW_RESIZED;
+
+}
+
+
+void cwindow_set_cursor(err_t* err, cwindow_t handle, bool hidden, bool locked) {
+
+    if (cwindow_is_valid(handle)) {
+        cthrow(err, CORE_WINNREADY);
+        return;
+    }
+
+    
 
 }
 
