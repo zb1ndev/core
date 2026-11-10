@@ -34,9 +34,22 @@ cwindow_linux_t* cwindow_get_by_surface(err_t* err, struct wl_surface* surface) 
 
 }
 
-// @note registry, display & compositor -> wayland-registry.c
-//       seat, keyboard & pointer       -> wayland-seat.c
-//       xdg_wm_base                    -> wayland-xdg.c
+// wayland-registry.c:
+//  - registry
+//  - display
+//  - compositor
+
+// wayland-seat.c:
+//  - seat
+//  - keyboard
+//  - pointer
+//  - locked_pointer
+//  - relative_pointer
+//  - pointer_constraints
+//  - relative_pointer_manager
+
+// wayland-xdg.c:
+//  - xdg_wm_base
 
 #include <window/linux/wayland/wayland-registry.c>
 
@@ -416,7 +429,6 @@ void cwindow_set_resized(err_t* err, cwindow_t handle, bool value) {
 
 }
 
-
 void cwindow_set_cursor(err_t* err, cwindow_t handle, bool hidden, bool locked) {
 
     if (cwindow_is_valid(handle)) {
@@ -424,7 +436,45 @@ void cwindow_set_cursor(err_t* err, cwindow_t handle, bool hidden, bool locked) 
         return;
     }
 
-    
+    windows_data[handle].state = hidden 
+        ? windows_data[handle].state | CORE_CWINDOW_MOUSE_HIDDEN
+        : windows_data[handle].state & ~CORE_CWINDOW_MOUSE_HIDDEN;
+
+    windows_data[handle].state = locked 
+        ? windows_data[handle].state | CORE_CWINDOW_MOUSE_LOCKED
+        : windows_data[handle].state & ~CORE_CWINDOW_MOUSE_LOCKED;
+
+    if (locked && locked_pointer == NULL) {
+
+        locked_pointer = zwp_pointer_constraints_v1_lock_pointer(
+            pointer_constraints,
+            windows_data[handle].surface,
+            pointer,
+            NULL,
+            ZWP_POINTER_CONSTRAINTS_V1_LIFETIME_PERSISTENT
+        );
+
+        zwp_locked_pointer_v1_add_listener(locked_pointer, &lock_pointer_listener, &windows_data[handle]);
+
+        // @todo add relative listener and update mouse_axis
+
+    }
+
+    if (!locked && locked_pointer != NULL) {
+
+        zwp_locked_pointer_v1_destroy(locked_pointer);
+        zwp_relative_pointer_v1_destroy(relative_pointer);
+
+        locked_pointer = NULL;
+        relative_pointer = NULL;
+
+    }
+
+    if (hidden == false) {
+
+        // @todo return cursor to default, may need to bind shm and copy default cursor first
+
+    }
 
 }
 

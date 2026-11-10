@@ -2,7 +2,34 @@
 
 internal struct wl_seat*        seat            = NULL;
 internal struct wl_keyboard*    keyboard        = NULL;
-internal struct wl_pointer*     pointer         = NULL;
+
+internal struct wl_pointer*     pointer                 = NULL;
+internal uint32_t               last_pointer_serial     = 0;
+
+internal struct zwp_pointer_constraints_v1*         pointer_constraints         = NULL;
+internal struct zwp_relative_pointer_manager_v1*    relative_pointer_manager    =  NULL;
+
+internal struct zwp_locked_pointer_v1*    locked_pointer    = NULL;
+internal struct zwp_relative_pointer_v1*  relative_pointer  = NULL;
+
+internal void locked_pointer_handle_locked(void* data, struct zwp_locked_pointer_v1* locked_pointer) {
+
+    cwindow_linux_t* window = (cwindow_linux_t*)data;
+    if (window->state & CORE_CWINDOW_MOUSE_HIDDEN > 0)
+        wl_pointer_set_cursor(pointer, last_pointer_serial, NULL, 0, 0);
+
+}
+
+internal void locked_pointer_handle_unlocked(void* data, struct zwp_locked_pointer_v1* locked_pointer) {
+
+    (void)data;
+    (void)locked_pointer;
+
+}
+
+internal const struct zwp_locked_pointer_v1_listener lock_pointer_listener = {
+    locked_pointer_handle_locked, locked_pointer_handle_unlocked 
+};
 
 internal void keyboard_keymap(void* data, struct wl_keyboard* wl_keyboard, uint32_t format, int32_t fd, uint32_t size) {}
 
@@ -71,6 +98,7 @@ internal void pointer_leave(void* data, struct wl_pointer* wl_pointer, uint32_t 
     });
 
     window->state &= ~CORE_CWINDOW_MOUSE_ENTERED;
+    last_pointer_serial = serial;
 
 }
 
@@ -84,6 +112,8 @@ internal void pointer_button(void* data, struct wl_pointer* wl_pointer, uint32_t
 
     if (button <= CORE_MOUSEB_MIDDLE && button >= CORE_MOUSEB_LEFT)
         cim_set_state(button, state);
+    last_pointer_serial = serial;
+
     cdbg_logf("button: %u, state: %u", button, state); // @todo plug in mouse and check other buttons, maybe make a seperate enum for mouse input
 
 }

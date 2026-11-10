@@ -133,6 +133,8 @@ extern "C" {
     #include <wayland-client.h>
 
     #include <wayland/xdg-shell-client-protocol.h>
+    #include <wayland/relative-pointer-unstable-v1-client-protocol.h>
+    #include <wayland/pointer-constraints-unstable-v1-client-protocol.h>
 
 #endif // CORE_PLATFORM_LINUX
 
@@ -248,6 +250,9 @@ extern "C" {
     #define CORE_CWINDOW_READY                          (1<<5) // Enabled when window is ready to be used.
     #define CORE_CWINDOW_FOCUSED                        (1<<6) // Enabled when window is in focus.
     #define CORE_CWINDOW_MOUSE_ENTERED                  (1<<7) // Enabled when the mouse is within the window bounds
+    #define CORE_CWINDOW_MOUSE_HIDDEN                   (1<<8) // Enabled when the mouse is hidden
+    #define CORE_CWINDOW_MOUSE_LOCKED                   (1<<9) // Enabled when the mouse is locked to the center of the window
+
 
     /*  Initializes a window and returns a handle to it.
         @param err An optional (can be `NULL`) reference to an error object the function can use to throw errors.

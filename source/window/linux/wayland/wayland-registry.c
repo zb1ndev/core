@@ -5,11 +5,10 @@ internal struct wl_registry*    registry        = NULL;
 internal struct wl_display*     display         = NULL;
 internal struct wl_compositor*  compositor      = NULL;
 
-// internal struct wp_locked_pointer_v1*    locked_pointer;
-// internal struct wp_relative_pointer_v1*  relative_pointer;
-
 internal void reg_global(void* data, struct wl_registry* registry, uint32_t name, const char* iface, uint32_t version) {
     
+    (void)data;
+
     // @note make sure the version provided is valid
     if (version < 1)
         return;
@@ -21,7 +20,6 @@ internal void reg_global(void* data, struct wl_registry* registry, uint32_t name
             version = 4;
         }
         
-        // @note bind the wayland compositor to our registry
         compositor = wl_registry_bind(registry, name, &wl_compositor_interface, version);
         if (compositor == NULL) {
             cdbg_err("failed to bind wayland compositor");
@@ -35,7 +33,6 @@ internal void reg_global(void* data, struct wl_registry* registry, uint32_t name
             version = 2;
         }
 
-        // @note bind the xdg window manager to our registry and add our listeners
         xdg_wm_base = wl_registry_bind(registry, name, &xdg_wm_base_interface, version);
         if (xdg_wm_base == NULL) { 
             cdbg_err("failed to bind xdg_wm_base");
@@ -54,7 +51,6 @@ internal void reg_global(void* data, struct wl_registry* registry, uint32_t name
             version = 7;
         }
 
-        // @note bind a wayland seat for input management to our registry and add our listeners
         seat = wl_registry_bind(registry, name, &wl_seat_interface, version);
         if (seat == NULL) { 
             cdbg_err("failed to bind wayland seat");
@@ -63,6 +59,22 @@ internal void reg_global(void* data, struct wl_registry* registry, uint32_t name
 
         if (wl_seat_add_listener(seat, &seat_listener, NULL) < 0) {
             cdbg_err("failed to add wayland seat listener");
+            return;
+        }
+
+    } else if (strcmp(iface, zwp_pointer_constraints_v1_interface.name) == 0) {
+
+        pointer_constraints = wl_registry_bind(registry, name, &zwp_pointer_constraints_v1_interface, version);
+        if (pointer_constraints == NULL) { 
+            cdbg_err("failed to bind wayland pointer constraints");
+            return;
+        }
+
+    } else if (strcmp(iface, zwp_relative_pointer_manager_v1_interface.name) == 0) {
+        
+        relative_pointer_manager = wl_registry_bind(registry, name, &zwp_relative_pointer_manager_v1_interface, version);
+        if (relative_pointer_manager == NULL) { 
+            cdbg_err("failed to bind wayland relative pointer manager");
             return;
         }
 
