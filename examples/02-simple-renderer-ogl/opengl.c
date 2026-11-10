@@ -29,8 +29,8 @@ internal GLuint index_buffer_object     = 0;
 internal void*  vertex_buffer           = NULL; // @note glMapBuffer with GL_ARRAY_BUFFER
 internal void*  index_buffer            = NULL; // @note glMapBuffer with GL_ELEMENT_ARRAY_BUFFER
 
-#define VERTEX_BUFFER_BLOCK_SIZE        ALIGN(VERTEX_SIZE       * MAX_VERTEX_COUNT, 46)
-#define INDEX_BUFFER_BLOCK_SIZE         ALIGN((VERTEX_SIZE / 4) * MAX_VERTEX_COUNT, 46)
+#define VERTEX_BUFFER_BLOCK_SIZE        ALIGN(VERTEX_SIZE       * MAX_VERTEX_COUNT, 64)
+#define INDEX_BUFFER_BLOCK_SIZE         ALIGN((VERTEX_SIZE / 4) * MAX_VERTEX_COUNT, 64)
 
 internal uint8_t current_buffer_offset                         = 0;
 internal GLsync ring_buffer_fences[RING_BUFFER_BLOCK_COUNT]    = { NULL }; 
@@ -75,7 +75,8 @@ int32_t write_to_ring_buffer(void* vdata, uint64_t vsize, void* idata, uint64_t 
 
     memcpy(vertex_buffer + vertex_offset, vdata, vsize);
     memcpy(index_buffer + index_offset, idata, isize);
-
+    
+    // @todo glFlushMappedBufferRange()
     current_buffer_offset = (current_buffer_offset + 1) % RING_BUFFER_BLOCK_COUNT;
     return 0;
 
@@ -101,7 +102,7 @@ internal GLuint raytrace_program        = 0;
 
 int32_t opengl_create_buffers(void) {
 
-    GLbitfield flags                = GL_MAP_WRITE_BIT | GL_MAP_COHERENT_BIT | GL_MAP_PERSISTENT_BIT;
+    GLbitfield flags                = GL_MAP_WRITE_BIT | GL_MAP_FLUSH_EXPLICIT_BIT | GL_MAP_PERSISTENT_BIT;
     GLsizeiptr vertex_array_size    = VERTEX_BUFFER_BLOCK_SIZE * RING_BUFFER_BLOCK_COUNT;
     GLsizeiptr index_array_size     = INDEX_BUFFER_BLOCK_SIZE  * RING_BUFFER_BLOCK_COUNT;
 
