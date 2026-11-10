@@ -104,22 +104,24 @@ internal GLuint raytrace_program        = 0;
 
 int32_t opengl_create_buffers(void) {
 
-    GLbitfield flags                = GL_MAP_WRITE_BIT | GL_MAP_FLUSH_EXPLICIT_BIT | GL_MAP_PERSISTENT_BIT;
+    GLbitfield storage_flags        = GL_MAP_WRITE_BIT | GL_MAP_PERSISTENT_BIT;
+    GLbitfield mapping_flags        = GL_MAP_WRITE_BIT | GL_MAP_FLUSH_EXPLICIT_BIT | GL_MAP_PERSISTENT_BIT;
+    
     GLsizeiptr vertex_array_size    = VERTEX_BUFFER_BLOCK_SIZE * RING_BUFFER_BLOCK_COUNT;
     GLsizeiptr index_array_size     = INDEX_BUFFER_BLOCK_SIZE  * RING_BUFFER_BLOCK_COUNT;
 
     glGenBuffers(1, &vertex_buffer_object);
     glBindBuffer(GL_ARRAY_BUFFER, vertex_buffer_object);
-    glBufferStorage(GL_ARRAY_BUFFER, vertex_array_size, NULL, flags);
-    if ((vertex_buffer = glMapBufferRange(GL_ARRAY_BUFFER, 0, vertex_array_size, flags)) == NULL) {
+    glBufferStorage(GL_ARRAY_BUFFER, vertex_array_size, NULL, storage_flags);
+    if ((vertex_buffer = glMapBufferRange(GL_ARRAY_BUFFER, 0, vertex_array_size, mapping_flags)) == NULL) {
         cdbg_err("glMapBufferRange on vertex buffer failed");
         return -1;
     }
 
     glGenBuffers(1, &index_buffer_object);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, index_buffer_object);
-    glBufferStorage(GL_ELEMENT_ARRAY_BUFFER, index_array_size, NULL, flags);
-    if ((index_buffer = glMapBufferRange(GL_ELEMENT_ARRAY_BUFFER, 0, index_array_size, flags)) == NULL) {
+    glBufferStorage(GL_ELEMENT_ARRAY_BUFFER, index_array_size, NULL, storage_flags);
+    if ((index_buffer = glMapBufferRange(GL_ELEMENT_ARRAY_BUFFER, 0, index_array_size, mapping_flags)) == NULL) {
         cdbg_errf("glMapBufferRange on index buffer failed: %d", glGetError());
         return -1;
     }

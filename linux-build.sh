@@ -67,8 +67,8 @@ done
 
 ar rcs ./build/libcore.a "${object_files[@]}"
 
-gcc -o ./build/examples/01-main ./examples/01-hello-world-ogl/main.c -L./build $includes -lcore $linkages
-./build/examples/01-main
+# gcc -o ./build/examples/01-main ./examples/01-hello-world-ogl/main.c -L./build $includes -lcore $linkages
+# ./build/examples/01-main
 
-# gcc -o ./build/examples/02-main ./examples/02-simple-renderer-ogl/main.c -L./build  $includes -lcore $linkages
-# ./build/examples/02-main $obj_file $mtl_file $normal_file
+gcc -o ./build/examples/02-main ./examples/02-simple-renderer-ogl/main.c -L./build  $includes -lcore $linkages
+./build/examples/02-main $obj_file $mtl_file $normal_file
