@@ -60,8 +60,7 @@ internal void tiny_obj_get_file_data(void* ctx, const char* file_name, const int
         
 }
 
-// @note we will need textures with object space normals with 
-// TBN Matricies ( tangent, bi-tangent, normal )
+// @note we will need textures with object space normals
 int32_t opengl_load_scene(int32_t argc, const char** argv) {
 
     

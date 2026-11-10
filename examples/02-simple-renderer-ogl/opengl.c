@@ -76,7 +76,9 @@ int32_t write_to_ring_buffer(void* vdata, uint64_t vsize, void* idata, uint64_t 
     memcpy(vertex_buffer + vertex_offset, vdata, vsize);
     memcpy(index_buffer + index_offset, idata, isize);
     
-    // @todo glFlushMappedBufferRange()
+    glFlushMappedBufferRange(GL_ARRAY_BUFFER, vertex_offset, vsize);
+    glFlushMappedBufferRange(GL_ELEMENT_ARRAY_BUFFER, index_offset, isize);
+
     current_buffer_offset = (current_buffer_offset + 1) % RING_BUFFER_BLOCK_COUNT;
     return 0;
 
