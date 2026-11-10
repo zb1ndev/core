@@ -84,6 +84,10 @@ internal void pointer_enter(void* data, struct wl_pointer* wl_pointer, uint32_t 
         return;
     });
 
+
+    if (window->state & CORE_CWINDOW_MOUSE_HIDDEN > 0)
+        wl_pointer_set_cursor(pointer, last_pointer_serial, NULL, 0, 0);
+
     window->state |= CORE_CWINDOW_MOUSE_ENTERED;
 
 }
