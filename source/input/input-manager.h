@@ -37,7 +37,7 @@ void                 cim_set_mouse_position      (ivec2 value);
     @returns N/A
     @note This is an internal function for updating input via windowing callbacks.
 */
-void                 cim_set_mouse_axis         (ivec2 value);
+void                 cim_set_mouse_axis         (vec2 value);
 
 #if defined(__cplusplus)
 }

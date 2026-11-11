@@ -72,7 +72,7 @@ internal void reg_global(void* data, struct wl_registry* registry, uint32_t name
             return;
         }
 
-        if (wl_registry_add_listener(shm, &shm_listener, NULL) < 0) {
+        if (wl_shm_add_listener(shm, &shm_listener, NULL) < 0) {
             cdbg_err("failed to add wayland shm listener");
             return;
         }

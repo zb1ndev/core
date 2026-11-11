@@ -121,7 +121,17 @@ int32_t main(int32_t argc, const char** argv) {
         return 1;
     }
 
+    bool lock_state = false;
     while (!cwindow_get_closed(NULL, handle)) {
+
+        if (cinput_get_button(NULL, CORE_KEYCODE_C)) {
+            lock_state = !lock_state;
+            cwindow_set_cursor(NULL,  handle, false, lock_state);
+        }
+
+        vec2 axis = {0};
+        cinput_get_mouse_axis(NULL, &axis);
+        cdbg_logf("axis: %f:%f", axis[0], axis[1]);
 
         if (cinput_get_button(NULL, CORE_KEYCODE_ESC))
             cwindow_close(NULL, handle);

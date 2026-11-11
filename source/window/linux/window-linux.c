@@ -43,10 +43,15 @@ cwindow_linux_t* cwindow_get_by_surface(err_t* err, struct wl_surface* surface) 
 //  - seat
 //  - keyboard
 //  - pointer
+
+// wayland-pointer.c
 //  - locked_pointer
 //  - relative_pointer
 //  - pointer_constraints
 //  - relative_pointer_manager
+
+// wayland-shm.c
+//  - shm
 
 // wayland-xdg.c:
 //  - xdg_wm_base
@@ -476,7 +481,8 @@ void cwindow_set_cursor(err_t* err, cwindow_t handle, bool hidden, bool locked) 
 
         zwp_locked_pointer_v1_add_listener(locked_pointer, &lock_pointer_listener, &windows_data[handle]);
 
-        // @todo add relative listener and update mouse_axis
+        relative_pointer = zwp_relative_pointer_manager_v1_get_relative_pointer(relative_pointer_manager, pointer);
+        zwp_relative_pointer_v1_add_listener(relative_pointer, &relative_pointer_listener, &windows_data[handle]);
 
     }
 

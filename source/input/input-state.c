@@ -4,7 +4,7 @@ internal bool   key_states[CORE_KEYCODE_COUNT]  = {0};
 internal bool   mouse_button_states[3]          = {0}; // @note left | middle | right
 
 internal ivec2  mouse_position                  = {0};
-internal ivec2  mouse_axis                      = {0};
+internal vec2   mouse_axis                      = {0};
 
 void cinput_get_mouse_position(err_t* err, ivec2* out) {
 
@@ -18,7 +18,7 @@ void cinput_get_mouse_position(err_t* err, ivec2* out) {
 
 }
 
-void cinput_get_mouse_axis(err_t* err, ivec2* out) {
+void cinput_get_mouse_axis(err_t* err, vec2* out) {
 
     if (out == NULL) {
         cthrow(err, CORE_PINVALID);
@@ -69,9 +69,14 @@ void cim_set_mouse_position(ivec2 value) {
 
 }
 
-void cim_set_mouse_axis(ivec2 value) {
+void cim_set_mouse_axis(vec2 value) {
 
-    mouse_axis[0] = value[0]; 
-    mouse_axis[1] = value[1]; 
+    local_persist vec2 last_value = (vec2){0};
+
+    mouse_axis[0] = last_value[0] - value[0]; 
+    mouse_axis[1] = last_value[1] - value[1];
+
+    last_value[0] = value[0];
+    last_value[1] = value[1];
 
 }

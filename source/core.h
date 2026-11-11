@@ -569,7 +569,7 @@ extern "C" {
         @param out A pointer to the location you want the movement to be copied.
         @returns N/A.
     */
-    void                    cinput_get_mouse_axis       (err_t* err, ivec2* out);
+    void                    cinput_get_mouse_axis       (err_t* err, vec2* out);
 
     /*  Gets the whether the provided keycode is pressed relative to the current focused window.
         @param err An optional (can be `NULL`) reference to an error object the function can use to throw errors.
