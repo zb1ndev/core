@@ -42,11 +42,11 @@ internal void relative_pointer_motion(
     (void)zwp_relative_pointer_v1;
     (void)utime_hi;
     (void)utime_lo;
-    (void)dx_unaccel;
-    (void)dy_unaccel;
+    (void)dx;
+    (void)dy;
 
     // @todo find a way to zero the axis when we are not moving
-    cim_set_mouse_axis((vec2){(float)wl_fixed_to_double(dx), (float)wl_fixed_to_double(dy)});
+    cim_set_mouse_axis((vec2){(float)wl_fixed_to_double(dx_unaccel), (float)wl_fixed_to_double(dy_unaccel)});
 
 }
 

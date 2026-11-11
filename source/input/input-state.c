@@ -71,12 +71,7 @@ void cim_set_mouse_position(ivec2 value) {
 
 void cim_set_mouse_axis(vec2 value) {
 
-    local_persist vec2 last_value = (vec2){0};
-
-    mouse_axis[0] = last_value[0] - value[0]; 
-    mouse_axis[1] = last_value[1] - value[1];
-
-    last_value[0] = value[0];
-    last_value[1] = value[1];
+    mouse_axis[0] = value[0];
+    mouse_axis[1] = value[1];
 
 }

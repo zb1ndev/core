@@ -247,10 +247,23 @@ void cwindow_destroy(err_t* err, cwindow_t handle) {
 
 void cwindow_update(err_t* err) {
 
+    // @note we have to detect no movement because wayland is poopy
+    local_persist vec2 last_axis = {0};
+
     if (wl_display_dispatch_pending(cwindow_get_display()) < 0) {
         cthrow(err, CORE_DISPDISPAT);
         return;
     }
+
+    vec2 current_axis = {0};
+    cinput_get_mouse_axis(NULL, &current_axis);
+    cim_set_mouse_axis((vec2){
+        current_axis[0] != last_axis[0] ? current_axis[0] : 0.0f,
+        current_axis[1] != last_axis[1] ? current_axis[1] : 0.0f,
+    });
+
+    last_axis[0] = current_axis[0];
+    last_axis[1] = current_axis[1];
 
 }
 
