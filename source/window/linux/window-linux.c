@@ -184,6 +184,16 @@ void cwindow_destroy(err_t* err, cwindow_t handle) {
             cthrow(err, *err);
         );
 
+        if (pointer_constraints != NULL) {
+            zwp_pointer_constraints_v1_destroy(pointer_constraints);
+            pointer_constraints = NULL;
+        }
+
+        if (relative_pointer_manager != NULL) {
+            zwp_relative_pointer_manager_v1_destroy(relative_pointer_manager);
+            relative_pointer_manager = NULL;
+        }
+
         if (keyboard != NULL) {
             wl_keyboard_release(keyboard);
             keyboard = NULL;
@@ -192,6 +202,16 @@ void cwindow_destroy(err_t* err, cwindow_t handle) {
         if (pointer != NULL) {
             wl_pointer_release(pointer);
             pointer = NULL;
+        }
+
+        if (seat != NULL) {
+            wl_seat_destroy(seat);
+            seat = NULL;
+        }
+
+        if (shm != NULL) {
+            wl_shm_destroy(shm);
+            shm = NULL;
         }
 
         if (xdg_wm_base != NULL) {

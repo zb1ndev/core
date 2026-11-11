@@ -57,7 +57,7 @@ internal void tiny_obj_get_file_data(void* ctx, const char* file_name, const int
     uint32_t data_size = 0;
     *data = read_file(file_name, &data_size);
     *len = (size_t)data_size;
-        
+    
 }
 
 // @note we will need textures with object space normals

@@ -1,5 +1,7 @@
 #include <window/linux/wayland/wayland-xdg.c>
+#include <window/linux/wayland/wayland-shm.c>
 #include <window/linux/wayland/wayland-seat.c>
+#include <window/linux/wayland/wayland-pointer.c>
 
 internal struct wl_registry*    registry        = NULL;
 internal struct wl_display*     display         = NULL;
@@ -59,6 +61,19 @@ internal void reg_global(void* data, struct wl_registry* registry, uint32_t name
 
         if (wl_seat_add_listener(seat, &seat_listener, NULL) < 0) {
             cdbg_err("failed to add wayland seat listener");
+            return;
+        }
+
+    } else if (strcmp(iface, wl_shm_interface.name) == 0) {
+
+        shm = wl_registry_bind(registry, name, &wl_shm_interface, version);
+        if (shm == NULL) { 
+            cdbg_err("failed to bind wayland shm");
+            return;
+        }
+
+        if (wl_registry_add_listener(shm, &shm_listener, NULL) < 0) {
+            cdbg_err("failed to add wayland shm listener");
             return;
         }
 

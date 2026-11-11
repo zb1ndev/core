@@ -6,32 +6,7 @@ internal struct wl_keyboard*    keyboard        = NULL;
 internal struct wl_pointer*     pointer                 = NULL;
 internal uint32_t               last_pointer_serial     = 0;
 
-internal struct zwp_pointer_constraints_v1*         pointer_constraints         = NULL;
-internal struct zwp_relative_pointer_manager_v1*    relative_pointer_manager    =  NULL;
-
-internal struct zwp_locked_pointer_v1*    locked_pointer    = NULL;
-internal struct zwp_relative_pointer_v1*  relative_pointer  = NULL;
-
-internal void locked_pointer_handle_locked(void* data, struct zwp_locked_pointer_v1* locked_pointer) {
-
-    cwindow_linux_t* window = (cwindow_linux_t*)data;
-    if (window->state & CORE_CWINDOW_MOUSE_HIDDEN > 0)
-        wl_pointer_set_cursor(pointer, last_pointer_serial, NULL, 0, 0);
-
-}
-
-internal void locked_pointer_handle_unlocked(void* data, struct zwp_locked_pointer_v1* locked_pointer) {
-
-    (void)data;
-    (void)locked_pointer;
-
-}
-
-internal const struct zwp_locked_pointer_v1_listener lock_pointer_listener = {
-    locked_pointer_handle_locked, locked_pointer_handle_unlocked 
-};
-
-internal void keyboard_keymap(void* data, struct wl_keyboard* wl_keyboard, uint32_t format, int32_t fd, uint32_t size) {}
+internal void keyboard_keymap(void* data, struct wl_keyboard* wl_keyboard, uint32_t format, int32_t fd, uint32_t size)      {}
 
 internal void keyboard_enter(void* data, struct wl_keyboard* wl_keyboard, uint32_t serial, struct wl_surface* surface, struct wl_array* keys) {
 
@@ -68,8 +43,9 @@ internal void keyboard_key(void* data, struct wl_keyboard* wl_keyboard, uint32_t
 
 }
 
-internal void keyboard_modifiers(void* data, struct wl_keyboard* wl_keyboard, uint32_t serial, uint32_t mods_depressed, uint32_t mods_latched, uint32_t mods_locked, uint32_t group) {}
-internal void keyboard_repeat_info(void* data, struct wl_keyboard* wl_keyboard, int32_t rate, int32_t delay) {}
+internal void keyboard_modifiers(void* data, struct wl_keyboard* wl_keyboard, uint32_t serial, 
+    uint32_t mods_depressed, uint32_t mods_latched, uint32_t mods_locked, uint32_t group)                                   {}
+internal void keyboard_repeat_info(void* data, struct wl_keyboard* wl_keyboard, int32_t rate, int32_t delay)                {}
 
 internal const struct wl_keyboard_listener keyboard_listener = {
     keyboard_keymap, keyboard_enter, keyboard_leave, keyboard_key, keyboard_modifiers, keyboard_repeat_info
@@ -122,12 +98,12 @@ internal void pointer_button(void* data, struct wl_pointer* wl_pointer, uint32_t
 
 }
 
-internal void pointer_axis(void* data, struct wl_pointer* wl_pointer, uint32_t time, uint32_t axis, wl_fixed_t value) {}
-internal void pointer_frame(void* data, struct wl_pointer* wl_pointer) {}
-internal void pointer_axis_source(void* data, struct wl_pointer* wl_pointer, uint32_t axis_source) {}
-internal void pointer_axis_stop(void* data, struct wl_pointer* wl_pointer, uint32_t time, uint32_t axis) {}
-internal void pointer_axis_discrete(void* data, struct wl_pointer* wl_pointer, uint32_t axis, int32_t discrete) {}
-internal void pointer_axis_value120(void* data, struct wl_pointer* wl_pointer, uint32_t axis, int32_t value120) {}
+internal void pointer_axis(void* data, struct wl_pointer* wl_pointer, uint32_t time, uint32_t axis, wl_fixed_t value)       {}
+internal void pointer_frame(void* data, struct wl_pointer* wl_pointer)                                                      {}
+internal void pointer_axis_source(void* data, struct wl_pointer* wl_pointer, uint32_t axis_source)                          {}
+internal void pointer_axis_stop(void* data, struct wl_pointer* wl_pointer, uint32_t time, uint32_t axis)                    {}
+internal void pointer_axis_discrete(void* data, struct wl_pointer* wl_pointer, uint32_t axis, int32_t discrete)             {}
+internal void pointer_axis_value120(void* data, struct wl_pointer* wl_pointer, uint32_t axis, int32_t value120)             {}
 internal void pointer_axis_relative_direction(void *data, struct wl_pointer *wl_pointer, uint32_t axis, uint32_t direction) {}
 
 internal const struct wl_pointer_listener pointer_listener = {
