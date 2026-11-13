@@ -88,6 +88,22 @@ cwindow_t cwindow_create(err_t* err, const char* title, ivec2 size) {
             return CORE_CWINDOW_INVALID;
         }
 
+        default_cursor_theme        = wl_cursor_theme_load(NULL, 24, shm);
+        default_cursor_surface      = wl_compositor_create_surface(compositor);
+        struct wl_cursor *cursor    = wl_cursor_theme_get_cursor(default_cursor_theme, "left_ptr");
+        
+        if (cursor == NULL || cursor->image_count <= 0) {
+            cthrow(err, CORE_CURSORINIT);  
+            return CORE_CWINDOW_INVALID;
+        }
+        
+        default_cursor_image = cursor->images[0];
+        default_cursor_buffer = wl_cursor_image_get_buffer(default_cursor_image);
+
+        wl_surface_attach(default_cursor_surface, default_cursor_buffer, 0, 0);
+        wl_surface_damage_buffer(default_cursor_surface, 0, 0, default_cursor_image->width, default_cursor_image->height);
+        wl_surface_commit(default_cursor_surface);
+
         window_manager_initialized = true;
 
     }
@@ -166,12 +182,10 @@ void cwindow_destroy(err_t* err, cwindow_t handle) {
     }
 
     cwindow_linux_t* window = &windows_data[handle];
-    if (window->cgraf_cleanup != NULL)  {
-        ccatch(err, window->cgraf_cleanup(err, handle),
-            cthrow(err, *err);    
-        );
-    }
-
+    if (window->cgraf_cleanup != NULL)  ccatch(err, window->cgraf_cleanup(err, handle),
+        cthrow(err, *err);    
+    );
+    
     xdg_toplevel_destroy(window->toplevel);
     xdg_surface_destroy(window->xdg_surface);
     wl_surface_destroy(window->surface);
@@ -197,6 +211,16 @@ void cwindow_destroy(err_t* err, cwindow_t handle) {
         if (relative_pointer_manager != NULL) {
             zwp_relative_pointer_manager_v1_destroy(relative_pointer_manager);
             relative_pointer_manager = NULL;
+        }
+
+        if (default_cursor_surface != NULL) {
+            wl_surface_destroy(default_cursor_surface);
+            default_cursor_surface = NULL;
+        }
+
+        if (default_cursor_theme != NULL) {
+            wl_cursor_theme_destroy(default_cursor_theme);
+            default_cursor_theme = NULL;
         }
 
         if (keyboard != NULL) {
@@ -509,11 +533,21 @@ void cwindow_set_cursor(err_t* err, cwindow_t handle, bool hidden, bool locked) 
 
     }
 
-    if (hidden == false) {
-
-        // @todo return cursor to default, may need to bind shm and copy default cursor first
-
+    if (hidden) {
+        wl_pointer_set_cursor(pointer, pointer_enter_serial, NULL, 0, 0);
+        goto visibility_handled;
     }
+
+    wl_pointer_set_cursor(
+        pointer, pointer_enter_serial, 
+        default_cursor_surface, 
+        default_cursor_image->hotspot_x, 
+        default_cursor_image->hotspot_y
+    );
+
+visibility_handled:
+
+    wl_display_flush(display);
 
 }
 

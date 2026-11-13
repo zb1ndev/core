@@ -1,14 +1,38 @@
 #!/bin/bash
-source "${BASH_SOURCE%/*}/bash-consts.sh"
 
+echo "[LOG] building core..."
+echo
+
+set -e
 generate_protocols=0
+install_dependencies=0
 
 for arg in "$@"; do
+
     if [[ "$arg" == "-g" ]]; then
+        
         generate_protocols=1
-        break
+
+    elif [[ "$arg" == "-i" ]]; then
+        
+        install_dependencies=1
+    
     fi
+
 done
+
+if [[ $install_dependencies -eq 1 ]]; then
+
+    # @todo install dependencies
+    echo "[LOG] installing dependencies..."
+
+    sudo apt-get update
+    sudo apt-get install -y libwayland-dev libwayland-bin libgl-dev libegl-dev libgles-dev libcglm-dev wayland-protocols
+    
+    echo "[LOG] finished installing dependencies"
+    echo
+
+fi
 
 scanner="wayland-scanner"
 protocol_dir="$(pkg-config --variable=pkgdatadir wayland-protocols)"
@@ -23,17 +47,20 @@ generate_protocol() {
 
     "$scanner" client-header "$xml" "$protocol_out/$name-client-protocol.h"
     "$scanner" private-code  "$xml" "$protocol_out/$name-protocol.c"
-    echo "generated $name"
+    echo "[LOG] generated $name"
 
 }
 
 if [[ $generate_protocols -eq 1 ]]; then
 
-    echo "generating Wayland protocols..."
+    echo "[LOG] started generating wayland protocols..."
+    
     generate_protocol "xdg-shell" "$protocol_dir/stable/xdg-shell/xdg-shell.xml"
     generate_protocol "pointer-constraints-unstable-v1" "$protocol_dir/unstable/pointer-constraints/pointer-constraints-unstable-v1.xml"
     generate_protocol "relative-pointer-unstable-v1" "$protocol_dir/unstable/relative-pointer/relative-pointer-unstable-v1.xml"
-    echo "wayland protocol generation complete"
+    
+    echo "[LOG] finished generating wayland protocol"
+    echo
 
 fi
 
@@ -67,8 +94,8 @@ done
 
 ar rcs ./build/libcore.a "${object_files[@]}"
 
-# gcc -o ./build/examples/01-main ./examples/01-hello-world-ogl/main.c -L./build $includes -lcore $linkages
-# ./build/examples/01-main
+gcc -o ./build/examples/01-main ./examples/01-hello-world-ogl/main.c -L./build $includes -lcore $linkages
+./build/examples/01-main
 
-gcc -o ./build/examples/02-main ./examples/02-simple-renderer-ogl/main.c -L./build  $includes -lcore $linkages
-./build/examples/02-main $obj_file $mtl_file $normal_file
+# gcc -o ./build/examples/02-main ./examples/02-simple-renderer-ogl/main.c -L./build  $includes -lcore $linkages
+# ./build/examples/02-main

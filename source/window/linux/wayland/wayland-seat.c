@@ -4,7 +4,7 @@ internal struct wl_seat*        seat            = NULL;
 internal struct wl_keyboard*    keyboard        = NULL;
 
 internal struct wl_pointer*     pointer                 = NULL;
-internal uint32_t               last_pointer_serial     = 0;
+internal uint32_t               pointer_enter_serial    = 0;
 
 internal void keyboard_keymap(void* data, struct wl_keyboard* wl_keyboard, uint32_t format, int32_t fd, uint32_t size)      {}
 
@@ -33,7 +33,6 @@ internal void keyboard_leave(void* data, struct wl_keyboard* wl_keyboard, uint32
     cim_clear_state();
     window->state &= ~CORE_CWINDOW_FOCUSED;
 
-
 }
 
 internal void keyboard_key(void* data, struct wl_keyboard* wl_keyboard, uint32_t serial, uint32_t time, uint32_t key, uint32_t state) {
@@ -43,9 +42,8 @@ internal void keyboard_key(void* data, struct wl_keyboard* wl_keyboard, uint32_t
 
 }
 
-internal void keyboard_modifiers(void* data, struct wl_keyboard* wl_keyboard, uint32_t serial, 
-    uint32_t mods_depressed, uint32_t mods_latched, uint32_t mods_locked, uint32_t group)                                   {}
-internal void keyboard_repeat_info(void* data, struct wl_keyboard* wl_keyboard, int32_t rate, int32_t delay)                {}
+internal void keyboard_modifiers(void* data, struct wl_keyboard* wl_keyboard, uint32_t serial, uint32_t mods_depressed, uint32_t mods_latched, uint32_t mods_locked, uint32_t group){}
+internal void keyboard_repeat_info(void* data, struct wl_keyboard* wl_keyboard, int32_t rate, int32_t delay){}
 
 internal const struct wl_keyboard_listener keyboard_listener = {
     keyboard_keymap, keyboard_enter, keyboard_leave, keyboard_key, keyboard_modifiers, keyboard_repeat_info
@@ -60,11 +58,24 @@ internal void pointer_enter(void* data, struct wl_pointer* wl_pointer, uint32_t 
         return;
     });
 
+    pointer_enter_serial = serial;
+    window->state       |= CORE_CWINDOW_MOUSE_ENTERED;
 
-    if (window->state & CORE_CWINDOW_MOUSE_HIDDEN > 0)
-        wl_pointer_set_cursor(pointer, last_pointer_serial, NULL, 0, 0);
+    if ((window->state & CORE_CWINDOW_MOUSE_HIDDEN) > 0) {
+        wl_pointer_set_cursor(wl_pointer, pointer_enter_serial, NULL, 0, 0);
+        goto visibility_handled;
+    }
 
-    window->state |= CORE_CWINDOW_MOUSE_ENTERED;
+    wl_pointer_set_cursor(
+        wl_pointer, pointer_enter_serial, 
+        default_cursor_surface, 
+        default_cursor_image->hotspot_x, 
+        default_cursor_image->hotspot_y
+    );
+
+visibility_handled:
+
+    return;
 
 }
 
@@ -78,7 +89,6 @@ internal void pointer_leave(void* data, struct wl_pointer* wl_pointer, uint32_t 
     });
 
     window->state &= ~CORE_CWINDOW_MOUSE_ENTERED;
-    last_pointer_serial = serial;
 
 }
 
@@ -92,7 +102,6 @@ internal void pointer_button(void* data, struct wl_pointer* wl_pointer, uint32_t
 
     if (button <= CORE_MOUSEB_MIDDLE && button >= CORE_MOUSEB_LEFT)
         cim_set_state(button, state);
-    last_pointer_serial = serial;
 
     cdbg_logf("button: %u, state: %u", button, state); // @todo plug in mouse and check other buttons, maybe make a seperate enum for mouse input
 
@@ -116,13 +125,13 @@ internal void seat_capabilities(void* data, struct wl_seat* wl_seat, uint32_t ca
     (void)data;
 
     // @note handle connection and disconnection of keyboards
-    if (capabilities & WL_SEAT_CAPABILITY_KEYBOARD > 0 && keyboard == NULL) {
+    if ((capabilities & WL_SEAT_CAPABILITY_KEYBOARD) > 0 && keyboard == NULL) {
 
         keyboard = wl_seat_get_keyboard(wl_seat);
         if (wl_keyboard_add_listener(keyboard, &keyboard_listener, NULL) < 0)
             cdbg_err("failed to add wayland keyboard listener");
     
-    } else if (capabilities & WL_SEAT_CAPABILITY_KEYBOARD == 0 && keyboard != NULL) {
+    } else if ((capabilities & WL_SEAT_CAPABILITY_KEYBOARD) == 0 && keyboard != NULL) {
     
         wl_keyboard_release(keyboard);
         keyboard = NULL;
@@ -130,13 +139,13 @@ internal void seat_capabilities(void* data, struct wl_seat* wl_seat, uint32_t ca
     }
  
     // @note handle connection and disconnection of pointers
-    if (capabilities & WL_SEAT_CAPABILITY_POINTER > 0 && pointer == NULL) {
+    if ((capabilities & WL_SEAT_CAPABILITY_POINTER) > 0 && pointer == NULL) {
     
         pointer = wl_seat_get_pointer(wl_seat);
         if (wl_pointer_add_listener(pointer, &pointer_listener, NULL) < 0)
             cdbg_err("failed to add wayland pointer listener");
     
-    } else if (capabilities & WL_SEAT_CAPABILITY_POINTER == 0 && pointer != NULL) {
+    } else if ((capabilities & WL_SEAT_CAPABILITY_POINTER) == 0 && pointer != NULL) {
     
         wl_pointer_release(pointer);
         pointer = NULL;

@@ -131,6 +131,7 @@ extern "C" {
     #include <EGL/egl.h>
     #include <wayland-egl.h>
     #include <wayland-client.h>
+    #include <wayland-cursor.h>
 
     #include <wayland/xdg-shell-client-protocol.h>
     #include <wayland/relative-pointer-unstable-v1-client-protocol.h>
@@ -196,6 +197,7 @@ extern "C" {
         CORE_GLADLOAD,              // `err_t`: GLAD Failed to Load
         CORE_EGLCREATWIN,           // `err_t`: EGL Failed to Create Window
         CORE_EGLCREATSURF,          // `err_t`: EGL Failed to Create Surface
+        CORE_CURSORINIT,            // `err_t`: Failed to load cursor defaults
 
         CORE_ERROR_COUNT            // `err_t`: Number of Error Types
 

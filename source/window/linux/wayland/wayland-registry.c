@@ -1,7 +1,7 @@
 #include <window/linux/wayland/wayland-xdg.c>
 #include <window/linux/wayland/wayland-shm.c>
-#include <window/linux/wayland/wayland-seat.c>
 #include <window/linux/wayland/wayland-pointer.c>
+#include <window/linux/wayland/wayland-seat.c>
 
 internal struct wl_registry*    registry        = NULL;
 internal struct wl_display*     display         = NULL;

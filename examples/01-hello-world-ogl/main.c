@@ -88,11 +88,24 @@ int32_t main(int32_t argc, const char** argv) {
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
     glEnableVertexAttribArray(0); 
 
+    bool can_unlock = false;
+    bool locked = false;
+
     while (!cwindow_get_closed(NULL, window)) {
+
+        cwindow_update(NULL);
 
         if (cinput_get_button(NULL, CORE_KEYCODE_ESC))
             cwindow_close(NULL, window);
-        cwindow_update(NULL);
+
+        if (!can_unlock && cinput_get_button(NULL, CORE_KEYCODE_C)) {
+            locked = !locked;
+            cwindow_set_cursor(NULL, window, locked, locked);
+            can_unlock = true;
+        }
+
+        if (can_unlock && !cinput_get_button(NULL, CORE_KEYCODE_C))
+            can_unlock = false;
 
         cgraf_draw_start(NULL, window);
 

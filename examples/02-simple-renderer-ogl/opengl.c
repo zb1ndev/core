@@ -9,18 +9,8 @@
 #define FRAGMENT_SHADER_PATH            "./examples/02-simple-renderer-ogl/shaders/fragment.glsl"
 #define COMPUTE_SHADER_PATH             "./examples/02-simple-renderer-ogl/shaders/fast-rt.comp"
 
-// @note Weird Raytracing Implementation ( "simple-renderer" ).
-// A raytracing-ish renderer with persistent mapping and fences for mesh data streaming
-// and maybe try implementing a 360 depth pass cube map that can be used for bounces that dont
-// result in hidden geometry or translusence. It can be used always for determining which pixels
-// to cast from and where the first ray will land. We will have to create normal textures and a
-// ray traversal grid, but for now we can just stick to the fast bounce method. We will generate 
-// the cube map at 512x512, render at 720p and upscale to 1080p with nearest neighbor. 
-
-// @note Still cant decide whether we should actually upscale or not. Also the depth pass should
-// be hevily optimized to save as much as possible as raytracing on an iGPU is going to be rough.
-// My processor is a 12-core AMD Ryzen 5 7640U with Radeon 760M Graphics and 16GB of RAM. Target is 
-// 30 frames per second in a static demo scene.
+// @note Math functions represent geometry (makes collisions and normals easier), maybe make negatives so. The sun and sky should be 
+// modeled and should just have a specific material. 
 
 internal GLuint vertex_buffer_object    = 0;
 internal GLuint index_buffer_object     = 0;
@@ -84,12 +74,6 @@ int32_t write_to_ring_buffer(void* vdata, uint64_t vsize, void* idata, uint64_t 
 
 }
 
-internal GLuint depth_cube_map          = 0;
-
-#define DEPTH_CUBE_MAP_WIDTH            (512U) // @note this should be large enough to get us close, if not we can adjust it
-#define DEPTH_CUBE_MAP_HEIGHT           (512U)
-#define DEPTH_CUBE_MIP_LEVELS           (1U)
-
 internal GLuint render_texture          = 0;
 
 #define RENDER_TEXTURE_HEIGHT           (720U)
@@ -127,25 +111,6 @@ int32_t opengl_create_buffers(void) {
     }
 
     cdbg_log("allocated and mapped vertex and index buffers");
-
-    glGenTextures(1, &depth_cube_map);
-    glBindTexture(GL_TEXTURE_CUBE_MAP, depth_cube_map);
-
-    glTexStorage2D(
-        GL_TEXTURE_CUBE_MAP, 
-        DEPTH_CUBE_MIP_LEVELS, 
-        GL_DEPTH_COMPONENT32F, 
-        DEPTH_CUBE_MAP_WIDTH, 
-        DEPTH_CUBE_MAP_HEIGHT
-    );
-
-    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
-
-    cdbg_log("allocated depth cube map");
 
     glGenTextures(1, &render_texture);
     glBindTexture(GL_TEXTURE_2D, render_texture);

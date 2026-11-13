@@ -9,7 +9,7 @@ internal const char* ERROR_MESSAGES[] = {
     "Display Flush Failure",                    "No EGL Display Found",                     "EGL Failed to Initialize", 
     "EGL Failed to Bind GAPI",                  "EGL Failed to Load Config",                "EGL Failed to Create Context", 
     "EGL Failed to Make Context Current",       "GLAD Failed to Load",                      "EGL Failed to Create Window", 
-    "EGL Failed to Create Surface",
+    "EGL Failed to Create Surface",             "Failed to load cursor defaults",
 };
 
 void _cdbg_eprint(int64_t line, const char* function, const char* etype, const char* fmt, ...) {

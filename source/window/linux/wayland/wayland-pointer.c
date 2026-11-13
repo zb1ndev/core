@@ -6,11 +6,15 @@ internal struct zwp_relative_pointer_manager_v1*    relative_pointer_manager    
 internal struct zwp_locked_pointer_v1*              locked_pointer              = NULL;
 internal struct zwp_relative_pointer_v1*            relative_pointer            = NULL;
 
+internal struct wl_cursor_theme*                    default_cursor_theme        = NULL;
+internal struct wl_surface*                         default_cursor_surface      = NULL;
+internal struct wl_cursor_image*                    default_cursor_image        = NULL;
+internal struct wl_buffer*                          default_cursor_buffer       = NULL;
+
 internal void locked_pointer_locked(void* data, struct zwp_locked_pointer_v1* locked_pointer) {
 
-    cwindow_linux_t* window = (cwindow_linux_t*)data;
-    if (window->state & CORE_CWINDOW_MOUSE_HIDDEN > 0)
-        wl_pointer_set_cursor(pointer, last_pointer_serial, NULL, 0, 0);
+    (void)data;
+    (void)locked_pointer;
 
 }
 
@@ -26,16 +30,9 @@ internal const struct zwp_locked_pointer_v1_listener lock_pointer_listener = {
 };
 
 internal void relative_pointer_motion(
-
-    void *data, 
-    struct zwp_relative_pointer_v1 *zwp_relative_pointer_v1, 
-    uint32_t utime_hi, 
-    uint32_t utime_lo, 
-    wl_fixed_t dx, 
-    wl_fixed_t dy, 
-    wl_fixed_t dx_unaccel, 
-    wl_fixed_t dy_unaccel
-
+    void *data, struct zwp_relative_pointer_v1 *zwp_relative_pointer_v1, 
+    uint32_t utime_hi, uint32_t utime_lo, wl_fixed_t dx, wl_fixed_t dy, 
+    wl_fixed_t dx_unaccel, wl_fixed_t dy_unaccel
 ) {
 
     (void)data;

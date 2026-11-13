@@ -1,11 +1,5 @@
 #include <core.h>
 
-#define TINYOBJ_LOADER_C_IMPLEMENTATION
-#include <tinyobj_loader_c.h>
-
-#define STB_IMAGE_IMPLEMENTATION
-#include <stb_image.h>
-
 #include <sys/mman.h>
 #include <sys/stat.h>
 
@@ -37,30 +31,11 @@ char* read_file(const char* file_path, uint32_t* size_out) {
 
 }
 
-void close_file(char* data, uint32_t size) {
-
-    munmap(data, size);
-
-}
+void close_file(char* data, uint32_t size) { munmap(data, size); }
 
 #include "opengl.c"
 
-internal void tiny_obj_get_file_data(void* ctx, const char* file_name, const int is_mtl, const char* obj_file_name, char** data, size_t* len) {
-
-    (void)ctx;
-
-    if (file_name == NULL) {
-        cdbg_err("file_name was NULL");
-        return;
-    }
-
-    uint32_t data_size = 0;
-    *data = read_file(file_name, &data_size);
-    *len = (size_t)data_size;
-    
-}
-
-// @note we will need textures with object space normals
+// @note may not need this, but I want this
 int32_t opengl_load_scene(int32_t argc, const char** argv) {
 
     
@@ -73,8 +48,7 @@ int32_t opengl_draw(cwindow_t handle) {
 
     cgraf_draw_start(NULL, handle);
 
-        // @todo do stuff here, currently crashing because of something opengl related.
-        // it is something shader related.
+
 
         glViewport(0, 0, 1920, 1080);
         glClearColor(0.2f, 0.2f, 0.2f, 1.0f);
@@ -121,17 +95,7 @@ int32_t main(int32_t argc, const char** argv) {
         return 1;
     }
 
-    bool lock_state = false;
     while (!cwindow_get_closed(NULL, handle)) {
-
-        if (cinput_get_button(NULL, CORE_KEYCODE_C)) {
-            lock_state = !lock_state;
-            cwindow_set_cursor(NULL,  handle, false, lock_state);
-        }
-
-        vec2 axis = {0};
-        cinput_get_mouse_axis(NULL, &axis);
-        cdbg_logf("axis: %f:%f", axis[0], axis[1]);
 
         if (cinput_get_button(NULL, CORE_KEYCODE_ESC))
             cwindow_close(NULL, handle);

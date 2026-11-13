@@ -32,8 +32,9 @@ void cinput_get_mouse_axis(err_t* err, vec2* out) {
 
 bool cinput_get_button(err_t* err, cinput_kc_t key_code) {
 
+    // @note this should segfault, but it doesnt :O
     if (key_code == CORE_MOUSEB_LEFT || key_code == CORE_MOUSEB_MIDDLE || key_code == CORE_MOUSEB_RIGHT)
-        return mouse_button_states[key_code];
+        return mouse_button_states[key_code - CORE_MOUSEB_LEFT];
 
     if (key_code > CORE_KEYCODE_COUNT || key_code < 0) {
         cthrow(err, CORE_PINVALID);
@@ -47,7 +48,7 @@ bool cinput_get_button(err_t* err, cinput_kc_t key_code) {
 void cim_set_state(cinput_kc_t key_code, bool value) { 
 
     if (key_code == CORE_MOUSEB_LEFT || key_code == CORE_MOUSEB_MIDDLE || key_code == CORE_MOUSEB_RIGHT) {
-        mouse_button_states[key_code] = value;
+        mouse_button_states[key_code - CORE_MOUSEB_LEFT] = value;
         return;
     }
 
