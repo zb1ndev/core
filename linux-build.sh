@@ -58,6 +58,7 @@ if [[ $generate_protocols -eq 1 ]]; then
     generate_protocol "xdg-shell" "$protocol_dir/stable/xdg-shell/xdg-shell.xml"
     generate_protocol "pointer-constraints-unstable-v1" "$protocol_dir/unstable/pointer-constraints/pointer-constraints-unstable-v1.xml"
     generate_protocol "relative-pointer-unstable-v1" "$protocol_dir/unstable/relative-pointer/relative-pointer-unstable-v1.xml"
+    generate_protocol "xdg-toplevel-icon-v1" "$protocol_dir/staging/xdg-toplevel-icon/xdg-toplevel-icon-v1.xml"
     
     echo "[LOG] finished generating wayland protocol"
     echo
@@ -75,6 +76,7 @@ source_files=(
     "./deps/wayland/xdg-shell-protocol.c"
     "./source/window/linux/window-linux.c"
     "./source/graphics/linux/graphics-linux.c"
+    "./deps/wayland/xdg-toplevel-icon-v1-protocol.c"
     "./deps/wayland/relative-pointer-unstable-v1-protocol.c"
     "./deps/wayland/pointer-constraints-unstable-v1-protocol.c"
 )

@@ -71,14 +71,6 @@ int32_t main(int32_t argc, const char** argv) {
     glDeleteShader(vertex_shader);
     glDeleteShader(fragment_shader);
     
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
-    glEnableVertexAttribArray(0);
-
-    glBindBuffer(GL_ARRAY_BUFFER, vbo);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);   // 1. then set the vertex attributes pointers
-    glEnableVertexAttribArray(0);
-
     uint32_t vao;
     glGenVertexArrays(1, &vao);  
         
@@ -95,21 +87,21 @@ int32_t main(int32_t argc, const char** argv) {
 
         cwindow_update(NULL);
 
-        if (cinput_get_button(NULL, CORE_KEYCODE_ESC))
+        if (cinput_get_key(NULL, CORE_KEYCODE_ESC))
             cwindow_close(NULL, window);
 
-        if (!can_unlock && cinput_get_button(NULL, CORE_KEYCODE_C)) {
+        if (!can_unlock && cinput_get_key(NULL, CORE_KEYCODE_C)) {
             locked = !locked;
             cwindow_set_cursor(NULL, window, locked, locked);
             can_unlock = true;
         }
 
-        if (can_unlock && !cinput_get_button(NULL, CORE_KEYCODE_C))
+        if (can_unlock && !cinput_get_key(NULL, CORE_KEYCODE_C))
             can_unlock = false;
 
         cgraf_draw_start(NULL, window);
 
-            float brightness = cinput_get_button(NULL, CORE_MOUSEB_LEFT) ? 0.5f : 0.1f;
+            float brightness = cinput_get_mouse_button(NULL, 0) ? 0.5f : 0.1f;
 
             glViewport(0, 0, window_size[0], window_size[1]);
             glClearColor(brightness, brightness, brightness, 1.0f);

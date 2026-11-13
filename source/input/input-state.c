@@ -1,7 +1,7 @@
 #include <input/input-manager.h>
 
 internal bool   key_states[CORE_KEYCODE_COUNT]  = {0};
-internal bool   mouse_button_states[3]          = {0}; // @note left | middle | right
+internal bool   mouse_button_states[UINT8_MAX]  = {0};
 
 internal ivec2  mouse_position                  = {0};
 internal vec2   mouse_axis                      = {0};
@@ -30,11 +30,7 @@ void cinput_get_mouse_axis(err_t* err, vec2* out) {
 
 }
 
-bool cinput_get_button(err_t* err, cinput_kc_t key_code) {
-
-    // @note this should segfault, but it doesnt :O
-    if (key_code == CORE_MOUSEB_LEFT || key_code == CORE_MOUSEB_MIDDLE || key_code == CORE_MOUSEB_RIGHT)
-        return mouse_button_states[key_code - CORE_MOUSEB_LEFT];
+bool cinput_get_key(err_t* err, cinput_kc_t key_code) {
 
     if (key_code > CORE_KEYCODE_COUNT || key_code < 0) {
         cthrow(err, CORE_PINVALID);
@@ -45,10 +41,24 @@ bool cinput_get_button(err_t* err, cinput_kc_t key_code) {
 
 }
 
-void cim_set_state(cinput_kc_t key_code, bool value) { 
+bool cinput_get_mouse_button(err_t* err, uint8_t button) {
 
-    if (key_code == CORE_MOUSEB_LEFT || key_code == CORE_MOUSEB_MIDDLE || key_code == CORE_MOUSEB_RIGHT) {
-        mouse_button_states[key_code - CORE_MOUSEB_LEFT] = value;
+    if (button > 255) {
+        cthrow(err, CORE_PINVALID);
+        return false;
+    }
+
+    return mouse_button_states[button];
+
+}
+
+void cim_set_state(int32_t key_code, bool value) { 
+
+    if ((key_code - CORE_MOUSEB_OFFSET) > 255 || key_code < 0)
+        return;
+
+    if (key_code >= CORE_MOUSEB_OFFSET && (key_code - CORE_MOUSEB_OFFSET) < 255) {
+        mouse_button_states[key_code - CORE_MOUSEB_OFFSET] = value;
         return;
     }
 
@@ -59,7 +69,7 @@ void cim_set_state(cinput_kc_t key_code, bool value) {
 void cim_clear_state(void) {
 
     (void)memset(key_states, false, sizeof(bool) * CORE_KEYCODE_COUNT);
-    (void)memset(mouse_button_states, false, sizeof(bool) * 3);
+    (void)memset(mouse_button_states, false, sizeof(bool) * UINT8_MAX);
 
 }
 

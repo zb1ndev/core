@@ -134,6 +134,7 @@ extern "C" {
     #include <wayland-cursor.h>
 
     #include <wayland/xdg-shell-client-protocol.h>
+    #include <wayland/xdg-toplevel-icon-v1-client-protocol.h>
     #include <wayland/relative-pointer-unstable-v1-client-protocol.h>
     #include <wayland/pointer-constraints-unstable-v1-client-protocol.h>
 
@@ -553,9 +554,7 @@ extern "C" {
 
         CORE_KEYCODE_COUNT,                 // Number of Defined Keycodes
 
-        CORE_MOUSEB_LEFT             = 272, // MOUSE BUTTON `LEFT`
-        CORE_MOUSEB_RIGHT,                  // MOUSE BUTTON `RIGHT`
-        CORE_MOUSEB_MIDDLE,                 // MOUSE BUTTON `MIDDLE`
+        CORE_MOUSEB_OFFSET                  = 272,
         
     };
 
@@ -578,7 +577,14 @@ extern "C" {
         @param keycode The keycode you want to check for.
         @returns Whether button ascociated with that keycode is pressed or not.
     */
-    bool                    cinput_get_button           (err_t* err, cinput_kc_t key_code);
+    bool                    cinput_get_key              (err_t* err, cinput_kc_t key_code);
+
+    /*  Gets the whether the provided mouse button is pressed relative to the current focused window.
+        @param err An optional (can be `NULL`) reference to an error object the function can use to throw errors.
+        @param button The mouse button number you want to check for.
+        @returns Whether button ascociated with that keycode is pressed or not.
+    */
+    bool                    cinput_get_mouse_button     (err_t* err, uint8_t button);
 
 #pragma endregion // CORE_INPUT
 

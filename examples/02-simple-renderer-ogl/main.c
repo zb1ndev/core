@@ -35,10 +35,29 @@ void close_file(char* data, uint32_t size) { munmap(data, size); }
 
 #include "opengl.c"
 
-// @note may not need this, but I want this
-int32_t opengl_load_scene(int32_t argc, const char** argv) {
+int32_t opengl_load_scene(void) {
 
-    
+    vec3 vertices[] = {
+        {-3.0f, -3.0f, 0.0f},
+        {3.0f, -3.0f, 0.0f},
+        {0.0f,  3.0f, 0.0f}
+    };  
+
+    write_to_ring_buffer(vertices, sizeof(vertices), NULL, 0);
+
+    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
+    glEnableVertexAttribArray(0);
+
+    return 0;
+
+}
+
+int32_t opengl_draw_scene(void) {
+
+    glUseProgram(default_program);
+    glBindVertexArray(vertex_array_object);
+    glDrawArrays(GL_TRIANGLES, 0 /*last_buffer_offset * VERTEX_BUFFER_BLOCK_SIZE*/, 3);
 
     return 0;
 
@@ -48,11 +67,12 @@ int32_t opengl_draw(cwindow_t handle) {
 
     cgraf_draw_start(NULL, handle);
 
-
-
         glViewport(0, 0, 1920, 1080);
         glClearColor(0.2f, 0.2f, 0.2f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+        if (opengl_draw_scene() < 0)
+            return -1;
 
     cgraf_draw_end(NULL, handle);
 
@@ -64,15 +84,6 @@ int32_t opengl_draw(cwindow_t handle) {
 
 int32_t main(int32_t argc, const char** argv) {
 
-    if (argc < 4 || argv == NULL) {
-        cdbg_err("invalid arguments, usage: <model as .obj> <material as .mtl> <object-space normals as .png>");
-        return 1;
-    }
-
-    cdbg_logf("rendering the following model, material, and normals\n\tmodel: %s\n\tmaterial: %s\n\tnormal: %s\n",
-        argv[1], argv[2], argv[3]
-    );
-
     err_t err = CORE_SUCCESS;
     ivec2 window_size = {1920, 1080};
     cwindow_t handle = CORE_CWINDOW_INVALID;
@@ -80,7 +91,7 @@ int32_t main(int32_t argc, const char** argv) {
         return 1;
     );
 
-    if (opengl_create_buffers() < 0) {
+    if (opengl_initialize_buffers() < 0) {
         ccatch(&err, cwindow_destroy(&err, handle), {});
         return 1;
     }
@@ -90,7 +101,12 @@ int32_t main(int32_t argc, const char** argv) {
         return 1;
     }
 
-    if (opengl_load_scene(argc, argv) < 0) {
+    if (opengl_initialize_arrays() < 0) {
+        ccatch(&err, cwindow_destroy(&err, handle), {});
+        return 1;
+    }
+
+    if (opengl_load_scene() < 0) {
         ccatch(&err, cwindow_destroy(&err, handle), {});
         return 1;
     }

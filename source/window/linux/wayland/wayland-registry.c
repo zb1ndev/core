@@ -2,6 +2,7 @@
 #include <window/linux/wayland/wayland-shm.c>
 #include <window/linux/wayland/wayland-pointer.c>
 #include <window/linux/wayland/wayland-seat.c>
+#include <window/linux/wayland/wayland-icon.c>
 
 internal struct wl_registry*    registry        = NULL;
 internal struct wl_display*     display         = NULL;
@@ -90,6 +91,16 @@ internal void reg_global(void* data, struct wl_registry* registry, uint32_t name
         relative_pointer_manager = wl_registry_bind(registry, name, &zwp_relative_pointer_manager_v1_interface, version);
         if (relative_pointer_manager == NULL) { 
             cdbg_err("failed to bind wayland relative pointer manager");
+            return;
+        }
+
+    } else if (strcmp(iface, xdg_toplevel_icon_manager_v1_interface.name) == 0) {
+
+        cdbg_warn("GNOME enviornments may not support the xdg toplevel icon wayland extension");
+
+        icon_manager = wl_registry_bind(registry, name, &xdg_toplevel_icon_manager_v1_interface, version);
+        if (icon_manager == NULL) { 
+            cdbg_err("failed to bind wayland xdg icon manager");
             return;
         }
 

@@ -34,27 +34,34 @@ cwindow_linux_t* cwindow_get_by_surface(err_t* err, struct wl_surface* surface) 
 
 }
 
-// wayland-registry.c:
-//  - registry
-//  - display
-//  - compositor
+/* internal globals defined by wayland implementation files
 
-// wayland-seat.c:
-//  - seat
-//  - keyboard
-//  - pointer
+    wayland-registry.c:
+        - registry
+        - display
+        - compositor
 
-// wayland-pointer.c
-//  - locked_pointer
-//  - relative_pointer
-//  - pointer_constraints
-//  - relative_pointer_manager
+    wayland-seat.c:
+        - seat
+        - keyboard
+        - pointer
 
-// wayland-shm.c
-//  - shm
+    wayland-pointer.c
+        - locked_pointer
+        - relative_pointer
+        - pointer_constraints
+        - relative_pointer_manager
 
-// wayland-xdg.c:
-//  - xdg_wm_base
+    wayland-shm.c
+        - shm
+
+    wayland-xdg.c:
+        - xdg_wm_base
+
+    wayland-icon.c:
+        - icon_manager
+
+*/
 
 #include <window/linux/wayland/wayland-registry.c>
 
@@ -445,9 +452,7 @@ void cwindow_set_icon(err_t* err, cwindow_t handle, uint8_t* data, uint64_t data
     if (data == NULL || data_size == 0) {
         cthrow(err, CORE_PINVALID);
         return;
-    }    
-
-    cdbg_warn("not implemented");
+    }
 
 }
 

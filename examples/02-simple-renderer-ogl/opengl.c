@@ -15,6 +15,8 @@
 internal GLuint vertex_buffer_object    = 0;
 internal GLuint index_buffer_object     = 0;
 
+internal GLuint vertex_array_object     = 0;
+
 // @note these are ring buffers
 internal void*  vertex_buffer           = NULL; // @note glMapBuffer with GL_ARRAY_BUFFER
 internal void*  index_buffer            = NULL; // @note glMapBuffer with GL_ELEMENT_ARRAY_BUFFER
@@ -22,15 +24,11 @@ internal void*  index_buffer            = NULL; // @note glMapBuffer with GL_ELE
 #define VERTEX_BUFFER_BLOCK_SIZE        ALIGN(VERTEX_SIZE       * MAX_VERTEX_COUNT, 64)
 #define INDEX_BUFFER_BLOCK_SIZE         ALIGN((VERTEX_SIZE / 4) * MAX_VERTEX_COUNT, 64)
 
-internal uint8_t current_buffer_offset                         = 0;
-internal GLsync ring_buffer_fences[RING_BUFFER_BLOCK_COUNT]    = { NULL }; 
+internal uint8_t current_buffer_offset                          = 0;
+internal uint8_t last_buffer_offset                             = 0;
+internal GLsync ring_buffer_fences[RING_BUFFER_BLOCK_COUNT]     = { NULL }; 
 
 int32_t write_to_ring_buffer(void* vdata, uint64_t vsize, void* idata, uint64_t isize) {
-
-    if (vdata == NULL || idata == NULL) {
-        cdbg_err("invalid parameters");
-        return -1;
-    }
 
     // @note wait until gpu is finished with the data we gave it last
     GLsync current_fence = ring_buffer_fences[current_buffer_offset]; 
@@ -63,12 +61,17 @@ int32_t write_to_ring_buffer(void* vdata, uint64_t vsize, void* idata, uint64_t 
     uint64_t vertex_offset = current_buffer_offset * VERTEX_BUFFER_BLOCK_SIZE;
     uint64_t index_offset  = current_buffer_offset * INDEX_BUFFER_BLOCK_SIZE;
 
-    memcpy(vertex_buffer + vertex_offset, vdata, vsize);
-    memcpy(index_buffer + index_offset, idata, isize);
-    
-    glFlushMappedBufferRange(GL_ARRAY_BUFFER, vertex_offset, vsize);
-    glFlushMappedBufferRange(GL_ELEMENT_ARRAY_BUFFER, index_offset, isize);
+    if (vertex_buffer != NULL) {
+        memcpy(vertex_buffer + vertex_offset, vdata, vsize);
+        glFlushMappedBufferRange(GL_ARRAY_BUFFER, vertex_offset, vsize);
+    }
 
+    if (index_buffer != NULL) {
+        memcpy(index_buffer + index_offset, idata, isize);
+        glFlushMappedBufferRange(GL_ELEMENT_ARRAY_BUFFER, index_offset, isize);
+    }
+    
+    last_buffer_offset = current_buffer_offset; 
     current_buffer_offset = (current_buffer_offset + 1) % RING_BUFFER_BLOCK_COUNT;
     return 0;
 
@@ -86,7 +89,7 @@ internal GLuint compute_shader          = 0;
 internal GLuint default_program         = 0;
 internal GLuint raytrace_program        = 0;
 
-int32_t opengl_create_buffers(void) {
+int32_t opengl_initialize_buffers(void) {
 
     GLbitfield storage_flags        = GL_MAP_WRITE_BIT | GL_MAP_PERSISTENT_BIT;
     GLbitfield mapping_flags        = GL_MAP_WRITE_BIT | GL_MAP_FLUSH_EXPLICIT_BIT | GL_MAP_PERSISTENT_BIT;
@@ -123,6 +126,14 @@ int32_t opengl_create_buffers(void) {
     cdbg_log("allocated render texture");
 
     return 0;
+
+}
+
+int32_t opengl_initialize_arrays(void) {
+
+    glGenVertexArrays(1, &vertex_array_object);
+    glBindVertexArray(vertex_array_object);
+    glBindBuffer(GL_ARRAY_BUFFER, vertex_buffer_object);
 
 }
 
@@ -183,17 +194,17 @@ int32_t opengl_load_shaders(void) {
     cdbg_log("compiled compute shader");
     close_file((char*)cs_data, cs_size);
 
+    GLenum err = glGetError();
+    if (err != GL_NO_ERROR) {
+        cdbg_errf("opengl error before program creation: 0x%X", err);
+    }
+
     // @note doesnt work, may need to do something different
     default_program = glCreateProgram();
     glAttachShader(default_program, vertex_shader);
     glAttachShader(default_program, fragment_shader);
     glLinkProgram(default_program);
     glGetProgramiv(default_program, GL_LINK_STATUS, &success);
-
-    GLenum err = glGetError();
-    if (err != GL_NO_ERROR) {
-        cdbg_errf("OpenGL error before program creation: 0x%X", err);
-    }
 
     if (success != GL_TRUE) {
         glGetProgramInfoLog(default_program, 1024, NULL, info_log);
